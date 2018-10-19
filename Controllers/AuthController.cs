@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Crossroads.Service.Auth.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Logging;
 
 namespace Crossroads.Service.Auth.Controllers
 {
@@ -16,17 +17,20 @@ namespace Crossroads.Service.Auth.Controllers
         private const string AuthHeaderKey = "authorization";
         private readonly IAuthService _authService;
         private readonly IOIDConfigurationFactory _configurationFactory;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService, IOIDConfigurationFactory configurationFactory)
+        public AuthController(IAuthService authService, IOIDConfigurationFactory configurationFactory, ILogger<AuthController> logger)
         {
             _authService = authService;
             _configurationFactory = configurationFactory;
+            _logger = logger;
         }
 
         // GET api/auth
         [HttpGet]
         public async Task<ActionResult<JObject>> Get([FromHeader] string Authorization)
         {
+            _logger.LogDebug("Debug log to test logz.io");
             return await _authService.IsAuthorized(Authorization, _configurationFactory);
         }
     }
