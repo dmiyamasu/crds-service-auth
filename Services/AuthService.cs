@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
+using Crossroads.Service.Auth.Constants;
 
 namespace Crossroads.Service.Auth.Services
 {
@@ -27,7 +28,7 @@ namespace Crossroads.Service.Auth.Services
             JwtSecurityToken decodedToken = null;
             string authFailureReason = "";
 
-            string authProvider = Constants.Constants.AUTH_PROVIDER_MP;
+            string authProvider = AuthConstants.AUTH_PROVIDER_MP;
 
             //Get the configuration manager for the mp provider
             ConfigurationManager<OpenIdConnectConfiguration> configurationManager;
@@ -44,7 +45,7 @@ namespace Crossroads.Service.Auth.Services
                 // If so we will try to validate against okta config
                 if (stvex.Message.Contains("IDX10501"))
                 {
-                    authProvider = Constants.Constants.AUTH_PROVIDER_OKTA;
+                    authProvider = AuthConstants.AUTH_PROVIDER_OKTA;
                     configurationManager = configurationFactory.GetConfiguration(authProvider);
 
                     //Otherwise try the okta token

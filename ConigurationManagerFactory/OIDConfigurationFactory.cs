@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Crossroads.Service.Auth.Services;
 using System.Linq;
 using Crossroads.Service.Auth.Interfaces;
+using Crossroads.Service.Auth.Constants;
 
 namespace Crossroads.Service.Auth.Factories
 {
@@ -28,8 +29,8 @@ namespace Crossroads.Service.Auth.Factories
                 new HttpDocumentRetriever());
 
             _configurations = new Dictionary<string, ConfigurationManager<OpenIdConnectConfiguration>>();
-            _configurations.Add(Constants.Constants.AUTH_PROVIDER_OKTA, oktaConfigurationManager);
-            _configurations.Add(Constants.Constants.AUTH_PROVIDER_MP, mpConfigurationManager);
+            _configurations.Add(AuthConstants.AUTH_PROVIDER_OKTA, oktaConfigurationManager);
+            _configurations.Add(AuthConstants.AUTH_PROVIDER_MP, mpConfigurationManager);
         }
 
         public ConfigurationManager<OpenIdConnectConfiguration> GetConfiguration(string name)

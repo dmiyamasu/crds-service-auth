@@ -9,7 +9,7 @@ using Crossroads.Service.Auth.Interfaces;
 using Crossroads.Service.Auth.Services;
 using Crossroads.Service.Auth.Factories;
 
-namespace crds_service_auth
+namespace Crossroads.Service.Auth
 {
     public class Startup
     {

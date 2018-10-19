@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace crds_service_auth
+namespace Crossroads.Service.Auth
 {
     public class Program
     {
