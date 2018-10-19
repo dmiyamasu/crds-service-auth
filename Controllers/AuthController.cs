@@ -15,17 +15,19 @@ namespace Crossroads.Service.Auth.Controllers
     {
         private const string AuthHeaderKey = "authorization";
         private readonly IAuthService _authService;
+        private readonly IOIDConfigurationFactory _configurationFactory;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IOIDConfigurationFactory configurationFactory)
         {
             _authService = authService;
+            _configurationFactory = configurationFactory;
         }
 
         // GET api/auth
         [HttpGet]
-        public ActionResult<JwtSecurityToken> Get([FromHeader] string Authorization)
+        public async Task<ActionResult<JObject>> Get([FromHeader] string Authorization)
         {
-            return _authService.IsAuthorized(Authorization);
+            return await _authService.IsAuthorized(Authorization, _configurationFactory);
         }
     }
 }

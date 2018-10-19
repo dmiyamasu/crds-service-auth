@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Crossroads.Service.Auth.Interfaces;
 using Crossroads.Service.Auth.Services;
-using System.Configuration;
+using Crossroads.Service.Auth.Factories;
 
 namespace crds_service_auth
 {
@@ -31,10 +26,8 @@ namespace crds_service_auth
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             //Add services
-
-            // Create the auth service here because it has to initialize
-            AuthService authService = new AuthService();
-            services.AddSingleton<IAuthService>(authService);
+            services.AddSingleton<IOIDConfigurationFactory>(new OIDConfigurationFactory());
+            services.AddSingleton<IAuthService>(new AuthService());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,9 +1,10 @@
-using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Crossroads.Service.Auth.Interfaces
 {
     public interface IAuthService
     {
-        JwtSecurityToken IsAuthorized(string token);
+        Task<JObject> IsAuthorized(string token, IOIDConfigurationFactory configurationFactory);
     }
 }

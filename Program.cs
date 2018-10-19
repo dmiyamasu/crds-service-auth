@@ -14,6 +14,16 @@ namespace crds_service_auth
     {
         public static void Main(string[] args)
         {
+            try
+            {
+                DotNetEnv.Env.Load(".env");
+            }
+            catch (Exception)
+            {
+                // no .env file present but since not required, just write
+                Console.WriteLine("no .env file found, reading environment variables from machine");
+            }
+
             CreateWebHostBuilder(args).Build().Run();
         }
 

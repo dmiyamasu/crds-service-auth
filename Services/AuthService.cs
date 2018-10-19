@@ -14,85 +14,101 @@ namespace Crossroads.Service.Auth.Services
 {
     public class AuthService : IAuthService
     {
-        private OpenIdConnectConfiguration _oktaConfiguration;
-        private OpenIdConnectConfiguration _mpConfiguration;
-
         public AuthService() 
         {
-            Task loadSigningKeysTask = LoadSigningKeysAsync();
+            
         }
 
-        public async Task LoadSigningKeysAsync()
+        //TODO: MP MIGRATION: This function currently checks for an mp token before okta. Validating the first token
+        // is significatly faster than validating the second. Once mp tokens are the minority of tokens being passed 
+        // we should swap the order
+        public async Task<JObject> IsAuthorized(string token, IOIDConfigurationFactory configurationFactory)
         {
-            var oktaConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                "https://dev-324490.oktapreview.com/oauth2/default/.well-known/openid-configuration",
-                new OpenIdConnectConfigurationRetriever(),
-                new HttpDocumentRetriever());
-            Task<OpenIdConnectConfiguration> oktaConfigTask = oktaConfigurationManager.GetConfigurationAsync();
+            JwtSecurityToken decodedToken = null;
+            string authFailureReason = "";
 
-            var mpConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                "https://adminint.crossroads.net/ministryplatformapi/oauth/.well-known/openid-configuration",
-                new OpenIdConnectConfigurationRetriever(),
-                new HttpDocumentRetriever());
-            Task<OpenIdConnectConfiguration> mpConfigTask = mpConfigurationManager.GetConfigurationAsync();
+            string authProvider = Constants.Constants.AUTH_PROVIDER_MP;
 
-            _oktaConfiguration = await oktaConfigTask;
-            _mpConfiguration = await mpConfigTask;
-        }
+            //Get the configuration manager for the mp provider
+            ConfigurationManager<OpenIdConnectConfiguration> configurationManager;
+            configurationManager = configurationFactory.GetConfiguration(authProvider);
 
-        public JwtSecurityToken IsAuthorized(string token)
-        {
-            JwtSecurityToken decodedToken;
-
-            //try okta - if that doesn't work it must be mp
-            try 
+            //try mp - if that doesn't work it must be okta
+            try
             {
-                decodedToken = ValidateMpToken(token);
+                decodedToken = await ValidateTokenAsync(token, configurationManager);
             }
-            catch (Exception)
+            catch (SecurityTokenValidationException stvex)
             {
-                decodedToken = ValidateOktaToken(token);
+                //Check the specifics of the exception - if exception was a signature validation failure it may be an okta token
+                // If so we will try to validate against okta config
+                if (stvex.Message.Contains("IDX10501"))
+                {
+                    authProvider = Constants.Constants.AUTH_PROVIDER_OKTA;
+                    configurationManager = configurationFactory.GetConfiguration(authProvider);
+
+                    //Otherwise try the okta token
+                    try
+                    {
+                        decodedToken = await ValidateTokenAsync(token, configurationManager);
+                    }
+                    catch (SecurityTokenValidationException exception)
+                    {
+                        //TODO: Maybe log something?
+                        authFailureReason = exception.Message;
+                    }
+                }
+                //Otherwise just throw the error
+                else
+                {
+                    //TODO: Maybe log something?
+                    authFailureReason = stvex.Message;
+                }
+            }
+            catch (ArgumentException argex)
+            {
+                // The token was not well-formed or was invalid for some other reason.
+                // TODO: Maybe log?
+                authFailureReason = argex.Message;
             }
 
-            //decodedToken.
-            return decodedToken;
+            JObject responseObject = new JObject();
+            JObject authenticationObject = new JObject();
+            JObject authorizationObject = new JObject();
+
+            if (decodedToken != null)
+            {
+                authenticationObject["authenticated"] = true;
+                authenticationObject["provider"] = authProvider;
+                authenticationObject["message"] = authFailureReason;
+                //tokenValidResponse["claims"] = new List<string>();
+            }
+            else
+            {
+                authenticationObject["authenticated"] = false;
+                authenticationObject["provider"] = authProvider;
+                authenticationObject["message"] = authFailureReason;
+                //tokenValidResponse["claims"] = new List<string>();
+            }
+
+            responseObject["authentication"] = authenticationObject;
+            responseObject["authorization"] = authorizationObject;
+
+            return responseObject;
         }
 
-        private JwtSecurityToken ValidateOktaToken(string token)
+        private async Task<JwtSecurityToken> ValidateTokenAsync(string token, ConfigurationManager<OpenIdConnectConfiguration> configurationManager)
         {
-            var oktaValidationParameters = new TokenValidationParameters
+            var discoveryDocument = await configurationManager.GetConfigurationAsync();
+            var signingKeys = discoveryDocument.SigningKeys;
+
+            var validationParameters = new TokenValidationParameters
             {
                 // Clock skew compensates for server time drift.
                 // We recommend 5 minutes or less:
                 ClockSkew = TimeSpan.FromMinutes(5),
                 // Specify the key used to sign the token:
-                IssuerSigningKeys = _oktaConfiguration.SigningKeys,
-                RequireSignedTokens = true,
-                // Ensure the token hasn't expired:
-                RequireExpirationTime = true,
-                ValidateLifetime = true,
-                // Ensure the token audience matches our audience value (default true):
-                ValidateAudience = true,
-                ValidAudience = "api://default",
-                // Ensure the token was issued by a trusted authorization server (default true):
-                ValidateIssuer = true,
-                ValidIssuer = _oktaConfiguration.Issuer
-            };
-
-            JwtSecurityToken decodedToken = JwtUtilities.ValidateAndDecode(token, oktaValidationParameters);
-
-            return decodedToken;
-        }
-
-        private JwtSecurityToken ValidateMpToken(string token)
-        {
-            var mpValidationParameters = new TokenValidationParameters
-            {
-                // Clock skew compensates for server time drift.
-                // We recommend 5 minutes or less:
-                ClockSkew = TimeSpan.FromMinutes(5),
-                // Specify the key used to sign the token:
-                IssuerSigningKeys = _mpConfiguration.SigningKeys,
+                IssuerSigningKeys = signingKeys,
                 RequireSignedTokens = true,
                 // Ensure the token hasn't expired:
                 RequireExpirationTime = true,
@@ -102,10 +118,10 @@ namespace Crossroads.Service.Auth.Services
                 //ValidAudience = "api://default",
                 // Ensure the token was issued by a trusted authorization server (default true):
                 ValidateIssuer = true,
-                ValidIssuer = _mpConfiguration.Issuer
+                ValidIssuer = discoveryDocument.Issuer
             };
 
-            JwtSecurityToken decodedToken = JwtUtilities.ValidateAndDecode(token, mpValidationParameters);
+            JwtSecurityToken decodedToken = JwtUtilities.ValidateAndDecode(token, validationParameters);
 
             return decodedToken;
         }
