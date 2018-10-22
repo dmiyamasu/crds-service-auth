@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1 
+kind: Deployment 
+metadata: 
+  name: crds-auth
+  namespace: api
+spec: 
+  replicas: 2
+  strategy: 
+    type: RollingUpdate 
+    rollingUpdate: 
+      maxSurge: 2
+      maxUnavailable: 0 
+  template: 
+    metadata: 
+      labels:
+        app: crds-auth
+    spec: 
+      containers: 
+        - name: crds-auth
+          image: crdschurch/crds-service-auth:local
+          imagePullPolicy: Never 
+          ports: 
+            - containerPort: 80 
+          resources: 
+            limits: 
+              memory: "1Gi"
+              cpu: "500m" 
+            requests: 
+              memory: "16Mi" 
+              cpu: "100m" 
+          # readinessProbe:
+          #   httpGet:
+          #     path: /api/health/status
+          #     port: 80
+          #   initialDelaySeconds: 1
+          #   timeoutSeconds: 3
+          #   successThreshold: 1
+          #   periodSeconds: 3
+          env: 
+            - name: ASPNETCORE_ENVIRONMENT
+              value: $ASPNETCORE_ENVIRONMENT
+            - name: MP_OAUTH_BASE_URL
+              value: $MP_OAUTH_BASE_URL
+            - name: OKTA_OAUTH_BASE_URL
+              value: $OKTA_OAUTH_BASE_URL
+            - name: NEW_RELIC_LICENSE_KEY            
+              value: $NR_INSTALL_KEY
+            - name: NEW_RELIC_APP_NAME
+              value: $NR_APP_NAME
+            - name: LOGZ_IO_KEY
+              value: $LOGZ_IO_KEY
