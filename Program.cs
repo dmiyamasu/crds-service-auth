@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Web;
 using NLog.Config;
+using NLog.Targets;
 
 namespace Crossroads.Service.Auth
 {
@@ -28,16 +29,44 @@ namespace Crossroads.Service.Auth
                 Console.WriteLine("no .env file found, reading environment variables from machine");
             }
 
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var isDevelopment = environment == EnvironmentName.Development;
 
             var config = new LoggingConfiguration();
-            var logzioTarget = new LogzioTarget
+
+            //Set up to log to stdout
+            if (isDevelopment)
             {
-                Token = Environment.GetEnvironmentVariable("LOGZ_IO_KEY"),
-            };
-            config.AddTarget("Logzio", logzioTarget);
-            config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, "Logzio", "*");
+                var consoleTarget = new ColoredConsoleTarget("console")
+                {
+                    Layout = @"${date:format=HH\:mm\:ss} ${level} ${message} ${exception:format=ToString}"
+                };
+                config.AddTarget("console", consoleTarget);
+
+                //Log everything in development
+                config.AddRuleForAllLevels(consoleTarget, "*");
+            }
+            else // Log to Logzio
+            {
+                var logzioTarget = new LogzioTarget
+                {
+                    Token = Environment.GetEnvironmentVariable("LOGZ_IO_KEY"),
+                };
+                logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("host", "${machinename}"));
+                logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("application", "auth"));
+                logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("environment", Environment.GetEnvironmentVariable("CRDS_ENV")));
+                config.AddTarget("logzio", logzioTarget);
+
+                //Log only warn and above for all built in logs
+                config.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Fatal, logzioTarget, "*");
+
+                //Log everything debug and above for custom logs
+                config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logzioTarget, "Crossroads.*");
+            }
+
             LogManager.Configuration = config;
+
+            var logger = NLogBuilder.ConfigureNLog(config).GetCurrentClassLogger();
 
             try
             {
@@ -60,7 +89,7 @@ namespace Crossroads.Service.Auth
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
+                   .UseStartup<Startup>()
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
