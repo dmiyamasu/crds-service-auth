@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2017
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crossroads.Service.Auth", "Crossroads.Service.Auth.csproj", "{4D669EF4-AF9F-4B5E-A8CC-97958DE2A390}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crossroads.Service.Auth", "Crossroads.Service.Auth/Crossroads.Service.Auth.csproj", "{4D669EF4-AF9F-4B5E-A8CC-97958DE2A390}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
