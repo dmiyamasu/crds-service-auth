@@ -21,7 +21,7 @@ namespace Crossroads.Service.Auth
         {
             try
             {
-                DotNetEnv.Env.Load(".env");
+                DotNetEnv.Env.Load("../.env");
             }
             catch (Exception)
             {

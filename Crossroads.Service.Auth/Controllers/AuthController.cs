@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Crossroads.Service.Auth.Interfaces;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Logging;
 
 namespace Crossroads.Service.Auth.Controllers
@@ -31,10 +27,6 @@ namespace Crossroads.Service.Auth.Controllers
         public async Task<ActionResult<JObject>> Get([FromHeader] string Authorization)
         {
             _logger.LogDebug("Debug log to test logz.io");
-            int x = 5;
-            int y = 0;
-
-            int z = x / y;
 
             return await _authService.IsAuthorized(Authorization, _configurationFactory);
         }

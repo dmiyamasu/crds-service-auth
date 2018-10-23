@@ -28,14 +28,22 @@ spec:
             requests: 
               memory: "16Mi" 
               cpu: "100m" 
-          # readinessProbe:
-          #   httpGet:
-          #     path: /api/health/status
-          #     port: 80
-          #   initialDelaySeconds: 1
-          #   timeoutSeconds: 3
-          #   successThreshold: 1
-          #   periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /api/health/ready
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            successThreshold: 1
+            periodSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /api/health/live
+              port: 80
+            initialDelaySeconds: 20
+            timeoutSeconds: 3
+            successThreshold: 1
+            periodSeconds: 10
           env: 
             - name: ASPNETCORE_ENVIRONMENT
               value: $ASPNETCORE_ENVIRONMENT
