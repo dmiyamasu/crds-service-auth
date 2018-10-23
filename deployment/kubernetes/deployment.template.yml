@@ -57,3 +57,5 @@ spec:
               value: $NR_APP_NAME
             - name: LOGZ_IO_KEY
               value: $LOGZ_IO_KEY
+            - name: APP_NAME
+              value: $APP_NAME

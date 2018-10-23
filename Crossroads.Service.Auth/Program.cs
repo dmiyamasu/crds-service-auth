@@ -53,7 +53,7 @@ namespace Crossroads.Service.Auth
                     Token = Environment.GetEnvironmentVariable("LOGZ_IO_KEY"),
                 };
                 logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("host", "${machinename}"));
-                logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("application", "auth"));
+                logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("application", Environment.GetEnvironmentVariable("APP_NAME")));
                 logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("environment", Environment.GetEnvironmentVariable("CRDS_ENV")));
                 config.AddTarget("logzio", logzioTarget);
 

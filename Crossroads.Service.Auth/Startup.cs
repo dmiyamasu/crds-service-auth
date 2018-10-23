@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Crossroads.Service.Auth.Interfaces;
 using Crossroads.Service.Auth.Services;
 using Crossroads.Service.Auth.Factories;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Crossroads.Service.Auth
 {
@@ -25,6 +24,12 @@ namespace Crossroads.Service.Auth
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "crds-service-auth", Version = "v1" });
+            });
+
             //Add services
             services.AddSingleton<IOIDConfigurationFactory>(new OIDConfigurationFactory());
             services.AddSingleton<IAuthService>(new AuthService());
@@ -41,6 +46,17 @@ namespace Crossroads.Service.Auth
             {
                 app.UseHsts();
             }
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "crds-service-auth");
+                c.RoutePrefix = string.Empty;
+            });
 
             // app.UseHttpsRedirection();
             app.UseMvc();
