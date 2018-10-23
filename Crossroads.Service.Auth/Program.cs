@@ -57,11 +57,24 @@ namespace Crossroads.Service.Auth
                 logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("environment", Environment.GetEnvironmentVariable("CRDS_ENV")));
                 config.AddTarget("logzio", logzioTarget);
 
-                //Log only warn and above for all built in logs
-                config.AddRule(NLog.LogLevel.Warn, NLog.LogLevel.Fatal, logzioTarget, "*");
+                //Log only error and above for all built in logs
+                config.AddRule(NLog.LogLevel.Error, NLog.LogLevel.Fatal, logzioTarget, "*");
 
                 //Log everything debug and above for custom logs
                 config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logzioTarget, "Crossroads.*");
+
+                // Also log to console so we have the info
+                var consoleTarget = new ColoredConsoleTarget("console")
+                {
+                    Layout = @"${date:format=HH\:mm\:ss} ${level} ${message} ${exception:format=ToString}"
+                };
+                config.AddTarget("console", consoleTarget);
+
+                //Log only warn and above for all built in logs
+                config.AddRule(NLog.LogLevel.Error, NLog.LogLevel.Fatal, consoleTarget, "*");
+
+                //Log everything debug and above for custom logs
+                config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, consoleTarget, "Crossroads.*");
             }
 
             LogManager.Configuration = config;

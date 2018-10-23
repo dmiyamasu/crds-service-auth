@@ -26,8 +26,6 @@ namespace Crossroads.Service.Auth.Controllers
         [HttpGet]
         public async Task<ActionResult<JObject>> Get([FromHeader] string Authorization)
         {
-            _logger.LogDebug("Debug log to test logz.io");
-
             return await _authService.IsAuthorized(Authorization, _configurationFactory);
         }
     }
