@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Logzio.DotNet.NLog;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Web;
 using NLog.Config;
 using NLog.Targets;
+using System.Collections.Generic;
 
 namespace Crossroads.Service.Auth
 {
@@ -19,6 +15,9 @@ namespace Crossroads.Service.Auth
     {
         public static void Main(string[] args)
         {
+            //TODO: Move env code to a static function somewhere
+            //TODO: Autogenerate a file, whether its .env or .json is TBD
+
             try
             {
                 DotNetEnv.Env.Load("../.env");
@@ -29,10 +28,34 @@ namespace Crossroads.Service.Auth
                 Console.WriteLine("no .env file found, reading environment variables from machine");
             }
 
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var isDevelopment = environment == EnvironmentName.Development;
+            // TODO: Read these values out of a file instead of hard coding here
+            List<string> requiredEnvVariables = new List<string>() {
+                "MP_OAUTH_BASE_URL",
+                "OKTA_OAUTH_BASE_URL",
+                "LOGZ_IO_KEY",
+                "ASPNETCORE_ENVIRONMENT"
+            };
 
-            var config = new LoggingConfiguration();
+            List<string> missingEnvVariables = new List<string>();
+            foreach (string envVariable in requiredEnvVariables)
+            {
+                if (Environment.GetEnvironmentVariable(envVariable) == null)
+                {
+                    missingEnvVariables.Add(envVariable);
+                }
+            }
+
+            if (missingEnvVariables.Count > 0)
+            {
+                throw new Exception("Must Define Environment Variables: " + String.Join(",", missingEnvVariables.ToArray()));
+            }
+
+            //TODO: Move logging setup somewhere
+            //TODO: Consider optional env variable for 'log level'
+
+            var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == EnvironmentName.Development;
+
+            var loggingConfig = new LoggingConfiguration();
 
             //Set up to log to stdout
             if (isDevelopment)
@@ -41,10 +64,10 @@ namespace Crossroads.Service.Auth
                 {
                     Layout = @"${date:format=HH\:mm\:ss} ${level} ${message} ${exception:format=ToString}"
                 };
-                config.AddTarget("console", consoleTarget);
+                loggingConfig.AddTarget("console", consoleTarget);
 
                 //Log everything in development
-                config.AddRuleForAllLevels(consoleTarget, "*");
+                loggingConfig.AddRuleForAllLevels(consoleTarget, "*");
             }
             else // Log to Logzio
             {
@@ -55,31 +78,31 @@ namespace Crossroads.Service.Auth
                 logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("host", "${machinename}"));
                 logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("application", Environment.GetEnvironmentVariable("APP_NAME")));
                 logzioTarget.ContextProperties.Add(new TargetPropertyWithContext("environment", Environment.GetEnvironmentVariable("CRDS_ENV")));
-                config.AddTarget("logzio", logzioTarget);
+                loggingConfig.AddTarget("logzio", logzioTarget);
 
                 //Log only error and above for all built in logs
-                config.AddRule(NLog.LogLevel.Error, NLog.LogLevel.Fatal, logzioTarget, "*");
+                loggingConfig.AddRule(NLog.LogLevel.Error, NLog.LogLevel.Fatal, logzioTarget, "*");
 
                 //Log everything debug and above for custom logs
-                config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logzioTarget, "Crossroads.*");
+                loggingConfig.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logzioTarget, "Crossroads.*");
 
                 // Also log to console so we have the info
                 var consoleTarget = new ColoredConsoleTarget("console")
                 {
                     Layout = @"${date:format=HH\:mm\:ss} ${level} ${message} ${exception:format=ToString}"
                 };
-                config.AddTarget("console", consoleTarget);
+                loggingConfig.AddTarget("console", consoleTarget);
 
                 //Log only warn and above for all built in logs
-                config.AddRule(NLog.LogLevel.Error, NLog.LogLevel.Fatal, consoleTarget, "*");
+                loggingConfig.AddRule(NLog.LogLevel.Error, NLog.LogLevel.Fatal, consoleTarget, "*");
 
                 //Log everything debug and above for custom logs
-                config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, consoleTarget, "Crossroads.*");
+                loggingConfig.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, consoleTarget, "Crossroads.*");
             }
 
-            LogManager.Configuration = config;
+            LogManager.Configuration = loggingConfig;
 
-            var logger = NLogBuilder.ConfigureNLog(config).GetCurrentClassLogger();
+            var logger = NLogBuilder.ConfigureNLog(loggingConfig).GetCurrentClassLogger();
 
             try
             {
