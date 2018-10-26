@@ -63,5 +63,5 @@ spec:
               value: $CRDS_MP_COMMON_CLIENT_ID
             - name: CRDS_MP_COMMON_CLIENT_SECRET
               value: $CRDS_MP_COMMON_CLIENT_SECRET
-            - name: CRDS_GATEWAY_CLIENT_ENDPOINT
-              value: $CRDS_GATEWAY_CLIENT_ENDPOINT
+            - name: MP_REST_API_ENDPOINT
+              value: $MP_REST_API_ENDPOINT
