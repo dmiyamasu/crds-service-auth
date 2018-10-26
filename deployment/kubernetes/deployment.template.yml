@@ -18,7 +18,7 @@ spec:
       containers: 
         - name: crds-auth
           image: crdschurch/crds-service-auth:local
-          imagePullPolicy: Never 
+          imagePullPolicy: Always 
           ports: 
             - containerPort: 80 
           resources: 
