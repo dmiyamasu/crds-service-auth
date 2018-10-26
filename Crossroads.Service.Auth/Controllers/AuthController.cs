@@ -1,8 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using Crossroads.Service.Auth.Interfaces;
+using Crossroads.Service.Auth.Services;
+using Crossroads.Service.Auth.Factories;
 using Microsoft.Extensions.Logging;
+using Crossroads.Web.Common.MinistryPlatform;
+using Crossroads.Web.Common.Security;
 
 namespace Crossroads.Service.Auth.Controllers
 {
@@ -11,22 +14,34 @@ namespace Crossroads.Service.Auth.Controllers
     public class AuthController : ControllerBase
     {
         private const string AuthHeaderKey = "authorization";
-        private readonly IAuthService _authService;
-        private readonly IOIDConfigurationFactory _configurationFactory;
+        private readonly OIDConfigurationFactory _configurationFactory;
         private readonly ILogger<AuthController> _logger;
+        private readonly IApiUserRepository _apiUserRepository;
+        private readonly IAuthenticationRepository _authenticationRepository;
+        private readonly IMinistryPlatformRestRequestBuilderFactory _ministryPlatformRestRequestBuilder;
 
-        public AuthController(IAuthService authService, IOIDConfigurationFactory configurationFactory, ILogger<AuthController> logger)
+        public AuthController(OIDConfigurationFactory configurationFactory, 
+                              IApiUserRepository apiUserRepository,
+                              IMinistryPlatformRestRequestBuilderFactory ministryPlatformRestRequestBuilder,
+                              IAuthenticationRepository authenticationRepository,
+                              ILogger<AuthController> logger)
         {
-            _authService = authService;
             _configurationFactory = configurationFactory;
             _logger = logger;
+            _apiUserRepository = apiUserRepository;
+            _ministryPlatformRestRequestBuilder = ministryPlatformRestRequestBuilder;
+            _authenticationRepository = authenticationRepository;
         }
 
         // GET api/auth
         [HttpGet]
         public async Task<ActionResult<JObject>> Get([FromHeader] string Authorization)
         {
-            return await _authService.IsAuthorized(Authorization, _configurationFactory);
+            return await AuthService.IsAuthorized(Authorization,
+                                                  _configurationFactory,
+                                                  _apiUserRepository,
+                                                  _authenticationRepository,
+                                                  _ministryPlatformRestRequestBuilder);
         }
     }
 }

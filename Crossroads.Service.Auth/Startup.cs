@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Crossroads.Service.Auth.Interfaces;
-using Crossroads.Service.Auth.Services;
 using Crossroads.Service.Auth.Factories;
 using Swashbuckle.AspNetCore.Swagger;
+using Crossroads.Web.Common.Configuration;
 
 namespace Crossroads.Service.Auth
 {
@@ -27,12 +26,16 @@ namespace Crossroads.Service.Auth
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
+                //TODO: Consider pulling version from project
+                //TODO: Consider setting title to env variable for APP_NAME
                 c.SwaggerDoc("v1", new Info { Title = "crds-service-auth", Version = "v1" });
             });
 
+            // Register all the webcommon stuff
+            CrossroadsWebCommonConfig.Register(services);
+
             //Add services
-            services.AddSingleton<IOIDConfigurationFactory>(new OIDConfigurationFactory());
-            services.AddSingleton<IAuthService>(new AuthService());
+            services.AddSingleton(new OIDConfigurationFactory());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
