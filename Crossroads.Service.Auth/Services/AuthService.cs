@@ -14,8 +14,6 @@ using Crossroads.Web.Common.Security;
 
 namespace Crossroads.Service.Auth.Services
 {
-    
-
     public static class AuthService
     {
         struct DecodeTokenResponse
@@ -37,7 +35,11 @@ namespace Crossroads.Service.Auth.Services
             DecodeTokenResponse decodeTokenResponse = await DecodeToken(token, configurationFactory);
 
             JObject authenticationObject = buildAuthenticationResponseObject(decodeTokenResponse);
-            JObject authorizationObject = buildAuthorizationResponseObject(decodeTokenResponse);
+            JObject authorizationObject = buildAuthorizationResponseObject(token,
+                                                                           decodeTokenResponse, 
+                                                                           authenticationRepository,
+                                                                          apiUserRepository,
+                                                                          mpRestBuilder);
 
             JObject responseObject = new JObject();
 
@@ -47,8 +49,11 @@ namespace Crossroads.Service.Auth.Services
             return responseObject;
         }
 
-        private static JObject buildAuthorizationResponseObject(DecodeTokenResponse decodeTokenResponse, 
-                                                                IAuthenticationRepository authenticationRepository)
+        private static JObject buildAuthorizationResponseObject(string originalToken,
+                                                                DecodeTokenResponse decodeTokenResponse, 
+                                                                IAuthenticationRepository authenticationRepository,
+                                                               IApiUserRepository userRepository,
+                                                               IMinistryPlatformRestRequestBuilderFactory ministryPlatformRest)
         {
             JObject authorizationObject = new JObject();
 
@@ -65,13 +70,13 @@ namespace Crossroads.Service.Auth.Services
                 else // If mp token:
                 {
                     // Go get the contact and/or userId
-                    contactId = authenticationRepository.GetContactId(token);
+                    contactId = authenticationRepository.GetContactId(originalToken);
                 }
 
                 // Go get the roles from mp
-                var mpAPIToken = apiUserRepository.GetDefaultApiClientToken();
-                var roles = mpRestBuilder.NewRequestBuilder()
-                  .WithAuthenticationToken(token)
+                var mpAPIToken = userRepository.GetDefaultApiClientToken();
+                var roles = ministryPlatformRest.NewRequestBuilder()
+                  .WithAuthenticationToken(originalToken)
                   .AddSelectColumn("Role_ID")
                   .WithFilter($"User_ID_Table_Contact_ID_Table.[Contact_ID]={contactId}")
                   .Build()
@@ -79,7 +84,7 @@ namespace Crossroads.Service.Auth.Services
                 var rolesList = roles.Select(r => r.Value<int>("Role_ID"));
             }
 
-            return authorizationObject();
+            return authorizationObject;
         }
 
         private static JObject buildAuthenticationResponseObject(DecodeTokenResponse decodeTokenResponse)
