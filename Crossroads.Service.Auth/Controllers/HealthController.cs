@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using Crossroads.Service.Auth.Interfaces;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Logging;
 using Crossroads.Service.Auth.Constants;
+using Crossroads.Service.Auth.Factories;
 
 namespace Crossroads.Service.Auth.Controllers
 {
@@ -16,23 +12,21 @@ namespace Crossroads.Service.Auth.Controllers
     public class HealthController : ControllerBase
     {
         private readonly ILogger<HealthController> _logger;
-        private readonly IOIDConfigurationFactory _configurationFactory;
+        private readonly OIDConfigurationFactory _configurationFactory;
 
-        public HealthController(ILogger<HealthController> logger, IOIDConfigurationFactory configurationFactory)
+        public HealthController(ILogger<HealthController> logger, OIDConfigurationFactory configurationFactory)
         {
             _logger = logger;
             _configurationFactory = configurationFactory;
         }
-
-
 
         // GET api/auth
         [HttpGet("ready")]
         [HttpGet("live")]
         public async Task<ActionResult<JObject>> Get()
         {
-            await _configurationFactory.GetConfiguration(AuthConstants.AUTH_PROVIDER_MP).GetConfigurationAsync();
-            await _configurationFactory.GetConfiguration(AuthConstants.AUTH_PROVIDER_OKTA).GetConfigurationAsync();
+            await _configurationFactory.mpConfigurationManager.GetConfigurationAsync();
+            await _configurationFactory.oktaConfigurationManager.GetConfigurationAsync();
 
             return new JObject();
         }

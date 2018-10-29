@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Crossroads.Service.Auth.Interfaces;
 using Newtonsoft.Json.Linq;
 using Crossroads.Service.Auth.Utilities;
 using Microsoft.IdentityModel.Protocols;
@@ -10,34 +7,122 @@ using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
 using Crossroads.Service.Auth.Constants;
+using Crossroads.Service.Auth.Factories;
+using Crossroads.Web.Common.MinistryPlatform;
+using System.Linq;
+using Crossroads.Web.Common.Security;
 
 namespace Crossroads.Service.Auth.Services
 {
-    public class AuthService : IAuthService
+    public static class AuthService
     {
-        public AuthService() 
+        struct DecodeTokenResponse
         {
-            
+            public JwtSecurityToken decodedToken;
+            public string authFailureReason;
+            public string authProvider;
         }
 
         //TODO: MP MIGRATION: This function currently checks for an mp token before okta. Validating the first token
-        // is significatly faster than validating the second. Once mp tokens are the minority of tokens being passed 
+        // is faster than validating the second. Once mp tokens are the minority of tokens being passed 
         // we should swap the order
-        public async Task<JObject> IsAuthorized(string token, IOIDConfigurationFactory configurationFactory)
+        internal static async Task<JObject> IsAuthorized(string token, 
+                                                         OIDConfigurationFactory configurationFactory, 
+                                                         IApiUserRepository apiUserRepository,
+                                                         IAuthenticationRepository authenticationRepository,
+                                                         IMinistryPlatformRestRequestBuilderFactory mpRestBuilder)
+        {
+            DecodeTokenResponse decodeTokenResponse = await DecodeToken(token, configurationFactory);
+
+            JObject authenticationObject = buildAuthenticationResponseObject(decodeTokenResponse);
+            JObject authorizationObject = buildAuthorizationResponseObject(token,
+                                                                           decodeTokenResponse, 
+                                                                           authenticationRepository,
+                                                                          apiUserRepository,
+                                                                          mpRestBuilder);
+
+            JObject responseObject = new JObject();
+
+            responseObject["authentication"] = authenticationObject;
+            responseObject["authorization"] = authorizationObject;
+
+            return responseObject;
+        }
+
+        private static JObject buildAuthorizationResponseObject(string originalToken,
+                                                                DecodeTokenResponse decodeTokenResponse, 
+                                                                IAuthenticationRepository authenticationRepository,
+                                                               IApiUserRepository userRepository,
+                                                               IMinistryPlatformRestRequestBuilderFactory ministryPlatformRest)
+        {
+            JObject authorizationObject = new JObject();
+
+            if (decodeTokenResponse.decodedToken != null)
+            {
+                int contactId = 0;
+
+                // If okta token:
+                if (decodeTokenResponse.authProvider == AuthConstants.AUTH_PROVIDER_OKTA)
+                {
+                    // try to pull contact and/or userId from token
+                    // try to get claims
+                }
+                else // If mp token:
+                {
+                    // Go get the contact and/or userId
+                    contactId = authenticationRepository.GetContactId(originalToken);
+                }
+
+                // Go get the roles from mp
+                var mpAPIToken = userRepository.GetDefaultApiClientToken();
+                var roles = ministryPlatformRest.NewRequestBuilder()
+                  .WithAuthenticationToken(originalToken)
+                  .AddSelectColumn("Role_ID")
+                  .WithFilter($"User_ID_Table_Contact_ID_Table.[Contact_ID]={contactId}")
+                  .Build()
+                  .Search<JObject>("dp_User_Roles");
+                var rolesList = roles.Select(r => r.Value<int>("Role_ID"));
+            }
+
+            return authorizationObject;
+        }
+
+        private static JObject buildAuthenticationResponseObject(DecodeTokenResponse decodeTokenResponse)
+        {
+            JObject authenticationObject = new JObject();
+
+            if (decodeTokenResponse.decodedToken != null)
+            {
+                authenticationObject["authenticated"] = true;
+                authenticationObject["provider"] = decodeTokenResponse.authProvider;
+                authenticationObject["message"] = decodeTokenResponse.authFailureReason;
+                //tokenValidResponse["claims"] = new List<string>();
+            }
+            else
+            {
+                authenticationObject["authenticated"] = false;
+                authenticationObject["provider"] = decodeTokenResponse.authProvider;
+                authenticationObject["message"] = decodeTokenResponse.authFailureReason;
+                //tokenValidResponse["claims"] = new List<string>();
+            }
+
+            return authenticationObject;
+        }
+
+        private static async Task<DecodeTokenResponse> DecodeToken(string token, OIDConfigurationFactory configurationFactory)
         {
             JwtSecurityToken decodedToken = null;
             string authFailureReason = "";
-
             string authProvider = AuthConstants.AUTH_PROVIDER_MP;
 
             //Get the configuration manager for the mp provider
             ConfigurationManager<OpenIdConnectConfiguration> configurationManager;
-            configurationManager = configurationFactory.GetConfiguration(authProvider);
+            configurationManager = configurationFactory.mpConfigurationManager;
 
             //try mp - if that doesn't work it must be okta
             try
             {
-                decodedToken = await ValidateTokenAsync(token, configurationManager);
+                decodedToken = await JwtUtilities.ValidateTokenAsync(token, configurationManager);
             }
             catch (SecurityTokenValidationException stvex)
             {
@@ -46,12 +131,12 @@ namespace Crossroads.Service.Auth.Services
                 if (stvex.Message.Contains("IDX10501"))
                 {
                     authProvider = AuthConstants.AUTH_PROVIDER_OKTA;
-                    configurationManager = configurationFactory.GetConfiguration(authProvider);
+                    configurationManager = configurationFactory.oktaConfigurationManager;
 
                     //Otherwise try the okta token
                     try
                     {
-                        decodedToken = await ValidateTokenAsync(token, configurationManager);
+                        decodedToken = await JwtUtilities.ValidateTokenAsync(token, configurationManager);
                     }
                     catch (SecurityTokenValidationException exception)
                     {
@@ -73,58 +158,12 @@ namespace Crossroads.Service.Auth.Services
                 authFailureReason = argex.Message;
             }
 
-            JObject responseObject = new JObject();
-            JObject authenticationObject = new JObject();
-            JObject authorizationObject = new JObject();
+            DecodeTokenResponse response = new DecodeTokenResponse();
+            response.authFailureReason = authFailureReason;
+            response.authProvider = authProvider;
+            response.decodedToken = decodedToken;
 
-            if (decodedToken != null)
-            {
-                authenticationObject["authenticated"] = true;
-                authenticationObject["provider"] = authProvider;
-                authenticationObject["message"] = authFailureReason;
-                //tokenValidResponse["claims"] = new List<string>();
-            }
-            else
-            {
-                authenticationObject["authenticated"] = false;
-                authenticationObject["provider"] = authProvider;
-                authenticationObject["message"] = authFailureReason;
-                //tokenValidResponse["claims"] = new List<string>();
-            }
-
-            responseObject["authentication"] = authenticationObject;
-            responseObject["authorization"] = authorizationObject;
-
-            return responseObject;
-        }
-
-        private async Task<JwtSecurityToken> ValidateTokenAsync(string token, ConfigurationManager<OpenIdConnectConfiguration> configurationManager)
-        {
-            var discoveryDocument = await configurationManager.GetConfigurationAsync();
-            var signingKeys = discoveryDocument.SigningKeys;
-
-            var validationParameters = new TokenValidationParameters
-            {
-                // Clock skew compensates for server time drift.
-                // We recommend 5 minutes or less:
-                ClockSkew = TimeSpan.FromMinutes(5),
-                // Specify the key used to sign the token:
-                IssuerSigningKeys = signingKeys,
-                RequireSignedTokens = true,
-                // Ensure the token hasn't expired:
-                RequireExpirationTime = true,
-                ValidateLifetime = true,
-                // Ensure the token audience matches our audience value (default true):
-                ValidateAudience = false,
-                //ValidAudience = "api://default",
-                // Ensure the token was issued by a trusted authorization server (default true):
-                ValidateIssuer = true,
-                ValidIssuer = discoveryDocument.Issuer
-            };
-
-            JwtSecurityToken decodedToken = JwtUtilities.ValidateAndDecode(token, validationParameters);
-
-            return decodedToken;
+            return response;
         }
     }
 }
