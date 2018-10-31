@@ -6,7 +6,6 @@ metadata:
   labels: 
     app: crds-auth-service
 spec:
-  type: NodePort
   ports: 
   - name: dotnet 
     port: 80
