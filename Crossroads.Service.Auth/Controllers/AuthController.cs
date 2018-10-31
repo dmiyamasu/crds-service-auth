@@ -10,7 +10,7 @@ using Crossroads.Service.Auth.Models;
 
 namespace Crossroads.Service.Auth.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -35,7 +35,7 @@ namespace Crossroads.Service.Auth.Controllers
         }
 
         // GET api/auth
-        [HttpGet]
+        [HttpGet, Route("authorize")]
         public async Task<ActionResult<AuthDTO>> Get([FromHeader] string Authorization)
         {
             return await AuthService.IsAuthorized(Authorization,
