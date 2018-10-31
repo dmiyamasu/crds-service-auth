@@ -4,7 +4,7 @@ WORKDIR /app
 # Copy files to /app 
 COPY . ./ 
  
-# Change working directory to Crossroads.Service.Finance
+# Change working directory to Crossroads.Service.Auth
 WORKDIR /app/Crossroads.Service.Auth
 
 # Change work directory back to /app - root of proj 

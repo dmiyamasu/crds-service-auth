@@ -6,6 +6,7 @@ using Crossroads.Service.Auth.Factories;
 using Microsoft.Extensions.Logging;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
+using Crossroads.Service.Auth.Models;
 
 namespace Crossroads.Service.Auth.Controllers
 {
@@ -35,7 +36,7 @@ namespace Crossroads.Service.Auth.Controllers
 
         // GET api/auth
         [HttpGet]
-        public async Task<ActionResult<JObject>> Get([FromHeader] string Authorization)
+        public async Task<ActionResult<AuthDTO>> Get([FromHeader] string Authorization)
         {
             return await AuthService.IsAuthorized(Authorization,
                                                   _configurationFactory,
