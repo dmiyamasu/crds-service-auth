@@ -35,7 +35,8 @@ namespace Crossroads.Service.Auth
             CrossroadsWebCommonConfig.Register(services);
 
             //Add services
-            services.AddSingleton(new OIDConfigurationFactory());
+            OIDConfigurationFactory configurationFactory = new OIDConfigurationFactory();
+            services.AddSingleton(configurationFactory);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

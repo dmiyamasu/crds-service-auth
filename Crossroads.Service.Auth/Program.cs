@@ -15,7 +15,31 @@ namespace Crossroads.Service.Auth
     {
         public static void Main(string[] args)
         {
-            //TODO: Move env code to a static function somewhere
+            ReadEnvironmentVariables();
+
+            var logger = SetUpLogging();
+
+            try
+            {
+                CreateWebHostBuilder(args).Build().Run();
+            }
+            catch (Exception ex)
+            {
+                //NLog: catch setup errors
+                logger.Error(ex, "Stopped program because of exception");
+                throw;
+            }
+            finally
+            {
+                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+                NLog.LogManager.Shutdown();
+            }
+
+            CreateWebHostBuilder(args).Build().Run();
+        }
+
+        static void ReadEnvironmentVariables()
+        {
             //TODO: Autogenerate a file, whether its .env or .json is TBD
 
             try
@@ -49,8 +73,10 @@ namespace Crossroads.Service.Auth
             {
                 throw new Exception("Must Define Environment Variables: " + String.Join(",", missingEnvVariables.ToArray()));
             }
+        }
 
-            //TODO: Move logging setup somewhere
+        static NLog.Logger SetUpLogging()
+        {
             //TODO: Consider optional env variable for 'log level'
 
             var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == EnvironmentName.Development;
@@ -102,25 +128,7 @@ namespace Crossroads.Service.Auth
 
             LogManager.Configuration = loggingConfig;
 
-            var logger = NLogBuilder.ConfigureNLog(loggingConfig).GetCurrentClassLogger();
-
-            try
-            {
-                CreateWebHostBuilder(args).Build().Run();
-            }
-            catch (Exception ex)
-            {
-                //NLog: catch setup errors
-                logger.Error(ex, "Stopped program because of exception");
-                throw;
-            }
-            finally
-            {
-                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
-                NLog.LogManager.Shutdown();
-            }
-
-            CreateWebHostBuilder(args).Build().Run();
+            return NLogBuilder.ConfigureNLog(loggingConfig).GetCurrentClassLogger();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
