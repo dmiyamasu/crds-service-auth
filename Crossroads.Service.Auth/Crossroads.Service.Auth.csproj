@@ -25,7 +25,4 @@
   <ItemGroup>
     <Content Remove="nlog.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MinistryPlatform\MinistryPlatform.csproj" />
-  </ItemGroup>
 </Project>

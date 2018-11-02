@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2017
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crossroads.Service.Auth", "Crossroads.Service.Auth\Crossroads.Service.Auth.csproj", "{4D669EF4-AF9F-4B5E-A8CC-97958DE2A390}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinistryPlatform", "MinistryPlatform\MinistryPlatform.csproj", "{EE6F1D96-09A7-4061-9F58-1B59E5C59258}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +13,5 @@ Global
 		{4D669EF4-AF9F-4B5E-A8CC-97958DE2A390}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D669EF4-AF9F-4B5E-A8CC-97958DE2A390}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D669EF4-AF9F-4B5E-A8CC-97958DE2A390}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE6F1D96-09A7-4061-9F58-1B59E5C59258}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE6F1D96-09A7-4061-9F58-1B59E5C59258}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE6F1D96-09A7-4061-9F58-1B59E5C59258}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE6F1D96-09A7-4061-9F58-1B59E5C59258}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
