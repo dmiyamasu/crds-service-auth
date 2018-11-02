@@ -70,6 +70,8 @@ namespace Crossroads.Service.Auth.Controllers
                 //This is a generic exception that will catch either:
                 //1. Token is expired or not yet valid
                 //2. Token signing keys are not valid
+                //All other exceptions are logged when the exception is thrown
+                _logger.LogDebug(ex.Message);
                 return StatusCode(400, ex.Message);
             }
             catch (NoContactIdAvailableException ex)

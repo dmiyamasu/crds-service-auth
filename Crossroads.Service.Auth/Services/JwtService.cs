@@ -7,10 +7,12 @@ using Crossroads.Service.Auth.Factories;
 using Crossroads.Service.Auth.Constants;
 using Crossroads.Service.Auth.Exceptions;
 
-namespace Crossroads.Service.Auth.Utilities
+namespace Crossroads.Service.Auth.Services
 {
-    public static class JwtUtilities
+    public static class JwtService
     {
+        private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
         public struct CrossroadsDecodedToken
         {
             public JwtSecurityToken decodedToken;
@@ -54,6 +56,7 @@ namespace Crossroads.Service.Auth.Utilities
             }
             catch (ArgumentException ex)
             {
+                _logger.Debug(ex.Message);
                 throw new TokenMalformedException(ex.Message);
             }
         }
@@ -74,7 +77,9 @@ namespace Crossroads.Service.Auth.Utilities
             }
             else
             {
-                throw new SecurityTokenInvalidIssuerException("The token issuer: " + decodedToken.Issuer + " was invalid");
+                string exceptionMessage = "The token issuer: " + decodedToken.Issuer + " was invalid";
+                _logger.Debug(exceptionMessage);
+                throw new SecurityTokenInvalidIssuerException(exceptionMessage);
             }
 
             return issuer;

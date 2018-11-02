@@ -8,13 +8,15 @@ using System.Linq;
 using Crossroads.Web.Common.Security;
 using Crossroads.Service.Auth.Models;
 using MinistryPlatform.Models;
-using static Crossroads.Service.Auth.Utilities.JwtUtilities;
+using static Crossroads.Service.Auth.Services.JwtService;
 using Crossroads.Service.Auth.Exceptions;
 
 namespace Crossroads.Service.Auth.Services
 {
     public static class AuthService
     {
+        private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
         internal static async Task<AuthDTO> Authorize(string token, 
                                                          OIDConfigurationFactory configurationFactory, 
                                                          IApiUserRepository apiUserRepository,
@@ -71,6 +73,7 @@ namespace Crossroads.Service.Auth.Services
             else
             {
                 //This should never happen based on previous logic
+                _logger.Error("Invalid issuer when there should not be an invalid issuer w/ token: " + originalToken);
                 throw new SecurityTokenInvalidIssuerException();
             }
 
@@ -80,6 +83,7 @@ namespace Crossroads.Service.Auth.Services
             }
             else
             {
+                _logger.Error("No contactId Available for token: " + originalToken);
                 throw new NoContactIdAvailableException();
             }
 
