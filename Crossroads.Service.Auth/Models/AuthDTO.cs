@@ -6,52 +6,55 @@ namespace Crossroads.Service.Auth.Models
 {
     public class AuthDTO
     {
-        [JsonProperty("authentication")]
-        public AuthenticationDTO authentication { get; set; }
+        [JsonProperty("Authentication")]
+        public AuthenticationDTO Authentication { get; set; }
 
-        [JsonProperty("authorization")]
-        public AuthorizationDTO authorization { get; set; }
+        [JsonProperty("Authorization")]
+        public AuthorizationDTO Authorization { get; set; }
 
-        [JsonProperty("userInfo")]
-        public UserInfoDTO userInfo { get; set; }
+        [JsonProperty("UserInfo")]
+        public UserInfoDTO UserInfo { get; set; }
     }
 
     public class AuthenticationDTO
     {
-        [JsonProperty("authenticated")]
-        public bool authenticated { get; set; }
+        [JsonProperty("Authenticated")]
+        public bool Authenticated { get; set; }
 
-        [JsonProperty("provider")]
-        public string provider { get; set; }
-
-        [JsonProperty("message")]
-        public string message { get; set; }
+        [JsonProperty("Provider")]
+        public string Provider { get; set; }
     }
 
     public class AuthorizationDTO
     {
-        [JsonProperty("mpRoles")]
-        public IEnumerable<string> mpRoles { get; set; }
+        [JsonProperty("MpRoles")]
+        public IDictionary<int, string> MpRoles { get; set; }
     }
 
     public class UserInfoDTO
     {
-        [JsonProperty("mpContactId")]
-        public int mpContactId { get; set; }
+        [JsonProperty("Mp")]
+        public MpUserInfoDTO Mp { get; set; }
+    }
 
-        [JsonProperty("mpUserId")]
-        public int? mpUserId { get; set; }
+    public class MpUserInfoDTO
+    {
+        [JsonProperty("ContactId")]
+        public int ContactId { get; set; }
 
-        [JsonProperty("mpParticipantId")]
-        public int? mpParticipantId { get; set; }
+        [JsonProperty("UserId")]
+        public int? UserId { get; set; }
 
-        [JsonProperty("mpHouseholdId")]
-        public int? mpHouseholdId { get; set; }
+        [JsonProperty("ParticipantId")]
+        public int? ParticipantId { get; set; }
 
-        [JsonProperty("mpEmail")]
-        public string mpEmail { get; set; }
+        [JsonProperty("HouseholdId")]
+        public int? HouseholdId { get; set; }
 
-        [JsonProperty("mpDonorId")]
-        public int? mpDonorId { get; set; }
+        [JsonProperty("Email")]
+        public string Email { get; set; }
+
+        [JsonProperty("DonorId")]
+        public int? DonorId { get; set; }
     }
 }

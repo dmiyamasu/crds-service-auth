@@ -1,56 +1,108 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Collections;
-using System.Configuration;
 using System;
 using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
-using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Threading.Tasks;
+using Crossroads.Service.Auth.Factories;
+using Crossroads.Service.Auth.Constants;
+using Crossroads.Service.Auth.Exceptions;
 
 namespace Crossroads.Service.Auth.Utilities
 {
     public static class JwtUtilities
     {
-        public static async Task<JwtSecurityToken> ValidateTokenAsync(string token, ConfigurationManager<OpenIdConnectConfiguration> configurationManager)
+        public struct CrossroadsDecodedToken
         {
-            var discoveryDocument = await configurationManager.GetConfigurationAsync();
-            var signingKeys = discoveryDocument.SigningKeys;
+            public JwtSecurityToken decodedToken;
+            public string authProvider;
+        }
 
+        struct JwtIssuer
+        {
+            public string authProvider;
+            public OpenIdConnectConfiguration configuration;
+        }
+
+        public static async Task<CrossroadsDecodedToken> DecodeAndValidateToken(string token, OIDConfigurationFactory configurationFactory)
+        {
+            JwtSecurityToken decodedToken = DecodeToken(token);
+
+            // Get updated configurations for auth servers
+            var mpConfiguration = await configurationFactory.mpConfigurationManager.GetConfigurationAsync();
+            var oktaConfiguration = await configurationFactory.oktaConfigurationManager.GetConfigurationAsync();
+
+            JwtIssuer issuer = GetAndValidateIssuer(decodedToken, mpConfiguration, oktaConfiguration);
+
+            ValidateToken(token, issuer.configuration);
+
+            CrossroadsDecodedToken crossroadsDecodedToken = new CrossroadsDecodedToken
+            {
+                decodedToken = decodedToken,
+                authProvider = issuer.authProvider
+            };
+
+            return crossroadsDecodedToken;
+        }
+
+        private static JwtSecurityToken DecodeToken(string token)
+        {
+            try
+            {
+                JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+                JwtSecurityToken decodedToken = tokenHandler.ReadJwtToken(token);
+                return decodedToken;
+            }
+            catch (ArgumentException ex)
+            {
+                throw new TokenMalformedException(ex.Message);
+            }
+        }
+
+        private static JwtIssuer GetAndValidateIssuer(JwtSecurityToken decodedToken, OpenIdConnectConfiguration mpConfiguration, OpenIdConnectConfiguration oktaConfiguration)
+        {
+            JwtIssuer issuer = new JwtIssuer();
+
+            if (decodedToken.Issuer == mpConfiguration.Issuer)
+            {
+                issuer.authProvider = AuthConstants.AUTH_PROVIDER_MP;
+                issuer.configuration = mpConfiguration;
+            }
+            else if (decodedToken.Issuer == oktaConfiguration.Issuer)
+            {
+                issuer.authProvider = AuthConstants.AUTH_PROVIDER_OKTA;
+                issuer.configuration = oktaConfiguration;
+            }
+            else
+            {
+                throw new SecurityTokenInvalidIssuerException("The token issuer: " + decodedToken.Issuer + " was invalid");
+            }
+
+            return issuer;
+        }
+
+        private static void ValidateToken(string token, OpenIdConnectConfiguration configuration)
+        {
             var validationParameters = new TokenValidationParameters
             {
                 // Clock skew compensates for server time drift.
                 // We recommend 5 minutes or less:
                 ClockSkew = TimeSpan.FromMinutes(5),
                 // Specify the key used to sign the token:
-                IssuerSigningKeys = signingKeys,
+                IssuerSigningKeys = configuration.SigningKeys,
                 RequireSignedTokens = true,
                 // Ensure the token hasn't expired:
                 RequireExpirationTime = true,
                 ValidateLifetime = true,
                 // Ensure the token audience matches our audience value (default true):
                 ValidateAudience = false,
-                //ValidAudience = "api://default",
                 // Ensure the token was issued by a trusted authorization server (default true):
-                ValidateIssuer = true,
-                ValidIssuer = discoveryDocument.Issuer
+                ValidateIssuer = false
             };
 
-            JwtSecurityToken decodedToken = JwtUtilities.ValidateAndDecode(token, validationParameters);
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
-            return decodedToken;
-        }
-
-        public static JwtSecurityToken ValidateAndDecode(
-            string jwt,
-            TokenValidationParameters validationParameters)
-        {
-            var claimsPrincipal = new JwtSecurityTokenHandler()
-                .ValidateToken(jwt, validationParameters, out var rawValidatedToken);
-
-            return (JwtSecurityToken)rawValidatedToken;
-            // Or, you can return the ClaimsPrincipal
-            // (which has the JWT properties automatically mapped to .NET claims)
+            SecurityToken decodedToken;
+            tokenHandler.ValidateToken(token, validationParameters, out decodedToken);
         }
     }
 }
