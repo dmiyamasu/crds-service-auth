@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Crossroads.Service.Auth.Services;
-using Crossroads.Service.Auth.Factories;
+using Crossroads.Service.Auth.Configurations;
 using Microsoft.Extensions.Logging;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
@@ -17,20 +17,18 @@ namespace Crossroads.Service.Auth.Controllers
     public class AuthController : ControllerBase
     {
         private const string AuthHeaderKey = "authorization";
-        private readonly OIDConfigurationFactory _configurationFactory;
-        private readonly ILogger<AuthController> _logger;
+        private readonly OIDConfigurations _configurations;
+        private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IApiUserRepository _apiUserRepository;
         private readonly IAuthenticationRepository _authenticationRepository;
         private readonly IMinistryPlatformRestRequestBuilderFactory _ministryPlatformRestRequestBuilder;
 
-        public AuthController(OIDConfigurationFactory configurationFactory, 
+        public AuthController(OIDConfigurations configurations, 
                               IApiUserRepository apiUserRepository,
                               IMinistryPlatformRestRequestBuilderFactory ministryPlatformRestRequestBuilder,
-                              IAuthenticationRepository authenticationRepository,
-                              ILogger<AuthController> logger)
+                              IAuthenticationRepository authenticationRepository)
         {
-            _configurationFactory = configurationFactory;
-            _logger = logger;
+            _configurations = configurations;
             _apiUserRepository = apiUserRepository;
             _ministryPlatformRestRequestBuilder = ministryPlatformRestRequestBuilder;
             _authenticationRepository = authenticationRepository;
@@ -48,10 +46,10 @@ namespace Crossroads.Service.Auth.Controllers
             try
             {
                 AuthDTO authDTO = await AuthService.Authorize(Authorization,
-                                                  _configurationFactory,
-                                                  _apiUserRepository,
-                                                  _authenticationRepository,
-                                                  _ministryPlatformRestRequestBuilder);
+                                                              _configurations,
+                                                              _apiUserRepository,
+                                                              _authenticationRepository,
+                                                              _ministryPlatformRestRequestBuilder);
 
                 return authDTO;
             }
@@ -71,7 +69,7 @@ namespace Crossroads.Service.Auth.Controllers
                 //1. Token is expired or not yet valid
                 //2. Token signing keys are not valid
                 //All other exceptions are logged when the exception is thrown
-                _logger.LogDebug(ex.Message);
+                _logger.Debug(ex.Message);
                 return StatusCode(400, ex.Message);
             }
             catch (NoContactIdAvailableException ex)

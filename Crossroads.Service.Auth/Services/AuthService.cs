@@ -2,7 +2,7 @@ using Newtonsoft.Json.Linq;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 using Crossroads.Service.Auth.Constants;
-using Crossroads.Service.Auth.Factories;
+using Crossroads.Service.Auth.Configurations;
 using Crossroads.Web.Common.MinistryPlatform;
 using System.Linq;
 using Crossroads.Web.Common.Security;
@@ -17,13 +17,13 @@ namespace Crossroads.Service.Auth.Services
     {
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        internal static async Task<AuthDTO> Authorize(string token, 
-                                                         OIDConfigurationFactory configurationFactory, 
-                                                         IApiUserRepository apiUserRepository,
-                                                         IAuthenticationRepository authenticationRepository,
-                                                         IMinistryPlatformRestRequestBuilderFactory mpRestBuilder)
+        internal static async Task<AuthDTO> Authorize(string token,
+                                                      OIDConfigurations configurations,
+                                                      IApiUserRepository apiUserRepository,
+                                                      IAuthenticationRepository authenticationRepository,
+                                                      IMinistryPlatformRestRequestBuilderFactory mpRestBuilder)
         {
-            CrossroadsDecodedToken decodedToken = await DecodeAndValidateToken(token, configurationFactory);
+            CrossroadsDecodedToken decodedToken = await DecodeAndValidateToken(token, configurations);
 
             var mpAPIToken = apiUserRepository.GetDefaultApiClientToken();
             UserInfoDTO userInfo = GetUserInfo(token,
@@ -56,6 +56,17 @@ namespace Crossroads.Service.Auth.Services
                                                IMinistryPlatformRestRequestBuilderFactory ministryPlatformRest)
         {
             UserInfoDTO userInfoObject = new UserInfoDTO();
+            int contactId = GetContactIdFromToken(originalToken, crossroadsDecodedToken, authenticationRepository);
+
+            userInfoObject.Mp = GetMpUserInfoFromContactId(contactId, mpAPIToken, ministryPlatformRest);
+
+            return userInfoObject;
+        }
+
+        private static int GetContactIdFromToken(string originalToken,
+                                             CrossroadsDecodedToken crossroadsDecodedToken,
+                                             IAuthenticationRepository authenticationRepository)
+        {
             int contactId = -1;
 
             // If okta token:
@@ -77,17 +88,23 @@ namespace Crossroads.Service.Auth.Services
                 throw new SecurityTokenInvalidIssuerException();
             }
 
+            return contactId;
+        }
+        
+
+        private static MpUserInfoDTO GetMpUserInfoFromContactId(int contactId,
+                                                                string mpAPIToken,
+                                                                IMinistryPlatformRestRequestBuilderFactory ministryPlatformRest)
+        {
             if (contactId > 0)
             {
-                userInfoObject.Mp = GetMpUserInfo(contactId, mpAPIToken, ministryPlatformRest);
+                return GetMpUserInfo(contactId, mpAPIToken, ministryPlatformRest);
             }
             else
             {
-                _logger.Error("No contactId Available for token: " + originalToken);
+                _logger.Error("No contactId Available for token");
                 throw new NoContactIdAvailableException();
             }
-
-            return userInfoObject;
         }
 
         private static MpUserInfoDTO GetMpUserInfo(int contactId,

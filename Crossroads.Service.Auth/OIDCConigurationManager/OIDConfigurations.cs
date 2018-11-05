@@ -1,11 +1,10 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace Crossroads.Service.Auth.Factories
+namespace Crossroads.Service.Auth.Configurations
 {
-    public class OIDConfigurationFactory
+    public class OIDConfigurations
     {
         private readonly string oktaAuthServerUrl = Environment.GetEnvironmentVariable("OKTA_OAUTH_BASE_URL");
         private readonly string mpAuthServerUrl = Environment.GetEnvironmentVariable("MP_OAUTH_BASE_URL");
@@ -15,7 +14,7 @@ namespace Crossroads.Service.Auth.Factories
 
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public OIDConfigurationFactory()
+        public OIDConfigurations()
         {
             oktaConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                 oktaAuthServerUrl + "/.well-known/openid-configuration",

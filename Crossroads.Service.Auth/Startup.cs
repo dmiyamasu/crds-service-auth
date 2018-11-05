@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Crossroads.Service.Auth.Factories;
+using Crossroads.Service.Auth.Configurations;
 using Swashbuckle.AspNetCore.Swagger;
 using Crossroads.Web.Common.Configuration;
 
@@ -35,7 +35,7 @@ namespace Crossroads.Service.Auth
             CrossroadsWebCommonConfig.Register(services);
 
             //Add services
-            OIDConfigurationFactory configurationFactory = new OIDConfigurationFactory();
+            OIDConfigurations configurationFactory = new OIDConfigurations();
             services.AddSingleton(configurationFactory);
         }
 

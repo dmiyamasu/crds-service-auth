@@ -3,7 +3,7 @@ using System;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Threading.Tasks;
-using Crossroads.Service.Auth.Factories;
+using Crossroads.Service.Auth.Configurations;
 using Crossroads.Service.Auth.Constants;
 using Crossroads.Service.Auth.Exceptions;
 
@@ -25,7 +25,7 @@ namespace Crossroads.Service.Auth.Services
             public OpenIdConnectConfiguration configuration;
         }
 
-        public static async Task<CrossroadsDecodedToken> DecodeAndValidateToken(string token, OIDConfigurationFactory configurationFactory)
+        public static async Task<CrossroadsDecodedToken> DecodeAndValidateToken(string token, OIDConfigurations configurationFactory)
         {
             JwtSecurityToken decodedToken = DecodeToken(token);
 

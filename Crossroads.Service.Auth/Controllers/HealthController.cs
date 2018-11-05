@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
 using Crossroads.Service.Auth.Constants;
-using Crossroads.Service.Auth.Factories;
+using Crossroads.Service.Auth.Configurations;
 
 namespace Crossroads.Service.Auth.Controllers
 {
@@ -11,13 +11,12 @@ namespace Crossroads.Service.Auth.Controllers
     [ApiController]
     public class HealthController : ControllerBase
     {
-        private readonly ILogger<HealthController> _logger;
-        private readonly OIDConfigurationFactory _configurationFactory;
+        private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+        private readonly OIDConfigurations _configurations;
 
-        public HealthController(ILogger<HealthController> logger, OIDConfigurationFactory configurationFactory)
+        public HealthController(OIDConfigurations configurations)
         {
-            _logger = logger;
-            _configurationFactory = configurationFactory;
+            _configurations = configurations;
         }
 
         // GET api/auth
@@ -25,8 +24,8 @@ namespace Crossroads.Service.Auth.Controllers
         [HttpGet("live")]
         public async Task<ActionResult<JObject>> Get()
         {
-            await _configurationFactory.mpConfigurationManager.GetConfigurationAsync();
-            await _configurationFactory.oktaConfigurationManager.GetConfigurationAsync();
+            await _configurations.mpConfigurationManager.GetConfigurationAsync();
+            await _configurations.oktaConfigurationManager.GetConfigurationAsync();
 
             return new JObject();
         }
