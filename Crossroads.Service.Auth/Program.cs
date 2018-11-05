@@ -38,6 +38,16 @@ namespace Crossroads.Service.Auth
             CreateWebHostBuilder(args).Build().Run();
         }
 
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                   .UseStartup<Startup>()
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                })
+                   .UseNLog();  // NLog: setup NLog for Dependency injection
+
         static void ReadEnvironmentVariables()
         {
             //TODO: Autogenerate a file, whether its .env or .json is TBD
@@ -130,15 +140,5 @@ namespace Crossroads.Service.Auth
 
             return NLogBuilder.ConfigureNLog(loggingConfig).GetCurrentClassLogger();
         }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                   .UseStartup<Startup>()
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-                })
-                   .UseNLog();  // NLog: setup NLog for Dependency injection
     }
 }

@@ -1,14 +1,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
-using Crossroads.Service.Auth.Services;
-using Crossroads.Service.Auth.Configurations;
-using Microsoft.Extensions.Logging;
-using Crossroads.Web.Common.MinistryPlatform;
-using Crossroads.Web.Common.Security;
 using Crossroads.Service.Auth.Models;
 using Crossroads.Service.Auth.Exceptions;
 using Microsoft.IdentityModel.Tokens;
+using Crossroads.Service.Auth.Interfaces;
 
 namespace Crossroads.Service.Auth.Controllers
 {
@@ -17,21 +12,12 @@ namespace Crossroads.Service.Auth.Controllers
     public class AuthController : ControllerBase
     {
         private const string AuthHeaderKey = "authorization";
-        private readonly OIDConfigurations _configurations;
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly IApiUserRepository _apiUserRepository;
-        private readonly IAuthenticationRepository _authenticationRepository;
-        private readonly IMinistryPlatformRestRequestBuilderFactory _ministryPlatformRestRequestBuilder;
+        private readonly IAuthService _authService;
 
-        public AuthController(OIDConfigurations configurations, 
-                              IApiUserRepository apiUserRepository,
-                              IMinistryPlatformRestRequestBuilderFactory ministryPlatformRestRequestBuilder,
-                              IAuthenticationRepository authenticationRepository)
+        public AuthController(IAuthService authService)
         {
-            _configurations = configurations;
-            _apiUserRepository = apiUserRepository;
-            _ministryPlatformRestRequestBuilder = ministryPlatformRestRequestBuilder;
-            _authenticationRepository = authenticationRepository;
+            _authService = authService;
         }
 
         /// <summary>
@@ -45,11 +31,7 @@ namespace Crossroads.Service.Auth.Controllers
         {
             try
             {
-                AuthDTO authDTO = await AuthService.Authorize(Authorization,
-                                                              _configurations,
-                                                              _apiUserRepository,
-                                                              _authenticationRepository,
-                                                              _ministryPlatformRestRequestBuilder);
+                AuthDTO authDTO = await _authService.Authorize(Authorization);
 
                 return authDTO;
             }

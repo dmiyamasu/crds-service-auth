@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Crossroads.Service.Auth.Configurations;
 using Swashbuckle.AspNetCore.Swagger;
 using Crossroads.Web.Common.Configuration;
+using Crossroads.Service.Auth.Services;
+using Crossroads.Service.Auth.Interfaces;
 
 namespace Crossroads.Service.Auth
 {
@@ -37,6 +39,11 @@ namespace Crossroads.Service.Auth
             //Add services
             OIDConfigurations configurationFactory = new OIDConfigurations();
             services.AddSingleton(configurationFactory);
+
+            services.AddSingleton<IMpUserService, MpUserService>();
+            services.AddSingleton<IOktaUserService, OktaUserService>();
+            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IAuthService, AuthService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

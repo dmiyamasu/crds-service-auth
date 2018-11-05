@@ -29,6 +29,9 @@ namespace Crossroads.Service.Auth.Models
     {
         [JsonProperty("MpRoles")]
         public IDictionary<int, string> MpRoles { get; set; }
+
+        [JsonProperty("OktaRoles")]
+        public IDictionary<int, string> OktaRoles { get; set; }
     }
 
     public class UserInfoDTO

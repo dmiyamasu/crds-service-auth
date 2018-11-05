@@ -4,10 +4,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="wwwroot\" />
-    <Folder Include="OIDCConigurationManager\" />
+    <Folder Include="OIDCConigurations\" />
     <Folder Include="Constants\" />
     <Folder Include="Models\" />
     <Folder Include="Exceptions\" />
+    <Folder Include="Services\Auth\" />
+    <Folder Include="Services\Jwt\" />
+    <Folder Include="Services\MpUser\" />
+    <Folder Include="Services\OktaUser\" />
+    <Folder Include="Services\User\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
