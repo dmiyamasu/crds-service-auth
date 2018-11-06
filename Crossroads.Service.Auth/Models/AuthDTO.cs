@@ -18,9 +18,6 @@ namespace Crossroads.Service.Auth.Models
 
     public class AuthenticationDTO
     {
-        [JsonProperty("Authenticated")]
-        public bool Authenticated { get; set; }
-
         [JsonProperty("Provider")]
         public string Provider { get; set; }
     }

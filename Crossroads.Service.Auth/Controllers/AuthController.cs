@@ -11,7 +11,6 @@ namespace Crossroads.Service.Auth.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private const string AuthHeaderKey = "authorization";
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly IAuthService _authService;
 
@@ -45,6 +44,11 @@ namespace Crossroads.Service.Auth.Controllers
                 //The issuer of the token was invalid - we are expecting okta or mp
                 return StatusCode(400, ex.Message);
             }
+            catch (NoContactIdAvailableException ex)
+            {
+                //Token was valid but we can't find an mp contact id
+                return StatusCode(400, ex.Message);
+            }
             catch (SecurityTokenValidationException ex)
             {
                 //This is a generic exception that will catch either:
@@ -52,11 +56,6 @@ namespace Crossroads.Service.Auth.Controllers
                 //2. Token signing keys are not valid
                 //All other exceptions are logged when the exception is thrown
                 _logger.Debug(ex.Message);
-                return StatusCode(400, ex.Message);
-            }
-            catch (NoContactIdAvailableException ex)
-            {
-                //Token was valid but we can't find an mp contact id
                 return StatusCode(400, ex.Message);
             }
         }

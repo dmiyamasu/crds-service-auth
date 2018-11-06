@@ -28,8 +28,6 @@ namespace Crossroads.Service.Auth
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                //TODO: Consider pulling version from project
-                //TODO: Consider setting title to env variable for APP_NAME
                 c.SwaggerDoc("v1", new Info { Title = "crds-service-auth", Version = "v1" });
             });
 

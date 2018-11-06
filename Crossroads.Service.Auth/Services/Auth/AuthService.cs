@@ -9,6 +9,7 @@ namespace Crossroads.Service.Auth.Services
 {
     public class AuthService : IAuthService
     {
+        //TODO: Create a base class that has a logger available
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         private OIDConfigurations _configurations;
@@ -24,22 +25,22 @@ namespace Crossroads.Service.Auth.Services
             _userService = userService;
         }
 
-        public async Task<AuthDTO> Authorize(string token)
+        public async Task<AuthDTO> GetAuthorization(string token)
         {
             CrossroadsDecodedToken decodedToken = await DecodeAndValidateToken(token, _configurations);
 
-            var mpAPIToken = _apiUserRepository.GetDefaultApiClientToken();
+            string mpAPIToken = _apiUserRepository.GetDefaultApiClientToken();
 
             UserInfoDTO userInfo = _userService.GetUserInfo(token, decodedToken, mpAPIToken);
 
-            AuthorizationDTO authorization = _userService.GetAuthorizations(decodedToken, mpAPIToken, userInfo.Mp.ContactId);
+            AuthorizationDTO authorizations = _userService.GetAuthorizations(decodedToken, mpAPIToken, userInfo.Mp.ContactId);
 
             AuthenticationDTO authentication = GetAuthentication(decodedToken);
 
             AuthDTO responseObject = new AuthDTO
             {
                 Authentication = authentication,
-                Authorization = authorization,
+                Authorization = authorizations,
                 UserInfo = userInfo
             };
 
@@ -48,12 +49,11 @@ namespace Crossroads.Service.Auth.Services
 
         private static AuthenticationDTO GetAuthentication(CrossroadsDecodedToken decodeTokenResponse)
         {
-            AuthenticationDTO authenticationObject = new AuthenticationDTO();
+            AuthenticationDTO authentication = new AuthenticationDTO();
 
-            authenticationObject.Authenticated = true;
-            authenticationObject.Provider = decodeTokenResponse.authProvider;
+            authentication.Provider = decodeTokenResponse.authProvider;
 
-            return authenticationObject;
+            return authentication;
         }
     }
 }

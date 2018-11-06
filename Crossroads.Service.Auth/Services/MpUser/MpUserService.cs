@@ -27,7 +27,6 @@ namespace Crossroads.Service.Auth.Services
 
         public int GetMpContactIdFromToken(string token)
         {
-            //TODO: See what happens when it can't find a contact Id
             int contactId = _authenticationRepository.GetContactId(token);
 
             return contactId;
@@ -48,6 +47,8 @@ namespace Crossroads.Service.Auth.Services
 
         public Dictionary<int, string> GetRoles(string mpAPIToken, int mpContactId)
         {
+            Dictionary<int, string> rolesDict = new Dictionary<int, string>();
+
             // Go get the roles from mp
             var columns = new string[] {
                     "dp_User_Roles.Role_ID",
@@ -55,13 +56,15 @@ namespace Crossroads.Service.Auth.Services
                 };
 
             var roles = _mpRestBuilder.NewRequestBuilder()
-                                            .WithAuthenticationToken(mpAPIToken)
-                                            .WithSelectColumns(columns)
+                                      .WithAuthenticationToken(mpAPIToken)
+                                      .WithSelectColumns(columns)
                                       .WithFilter($"User_ID_Table_Contact_ID_Table.[Contact_ID]={mpContactId}")
-                                            .Build()
-                                            .Search<JObject>("dp_User_Roles");
+                                      .Build()
+                                      .Search<JObject>("dp_User_Roles");
 
-            var rolesDict = roles.ToDictionary(x => x.Value<int>("Role_ID"), x => x.Value<string>("Role_Name"));
+            foreach (var role in roles) {
+                rolesDict.Add(role.Value<int>("Role_ID"), role.Value<string>("Role_Name"));
+            }
 
             return rolesDict;
         }

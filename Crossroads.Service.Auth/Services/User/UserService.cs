@@ -20,8 +20,8 @@ namespace Crossroads.Service.Auth.Services
         }
 
         public UserInfoDTO GetUserInfo(string originalToken,
-                                               CrossroadsDecodedToken crossroadsDecodedToken,
-                                               string mpAPIToken)
+                                       CrossroadsDecodedToken crossroadsDecodedToken,
+                                       string mpAPIToken)
         {
             UserInfoDTO userInfoObject = new UserInfoDTO();
             int contactId = GetContactIdFromToken(originalToken, crossroadsDecodedToken);
