@@ -30,7 +30,7 @@ namespace Crossroads.Service.Auth.Controllers
         {
             try
             {
-                AuthDTO authDTO = await _authService.Authorize(Authorization);
+                AuthDTO authDTO = await _authService.GetAuthorization(Authorization);
 
                 return authDTO;
             }

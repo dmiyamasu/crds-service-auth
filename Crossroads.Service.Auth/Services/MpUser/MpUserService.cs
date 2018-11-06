@@ -85,8 +85,6 @@ namespace Crossroads.Service.Auth.Services
                                         .Build()
                                         .Get<MpContact>(contactId);
 
-            //TODO: What happens if anything fails?
-
             MpUserInfoDTO mpUserInfoDTO = new MpUserInfoDTO
             {
                 ContactId = contactId,

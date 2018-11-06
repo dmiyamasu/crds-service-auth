@@ -66,8 +66,7 @@ namespace Crossroads.Service.Auth
             List<string> requiredEnvVariables = new List<string>() {
                 "MP_OAUTH_BASE_URL",
                 "OKTA_OAUTH_BASE_URL",
-                "LOGZ_IO_KEY",
-                "ASPNETCORE_ENVIRONMENT"
+                "LOGZ_IO_KEY"
             };
 
             List<string> missingEnvVariables = new List<string>();
@@ -87,8 +86,6 @@ namespace Crossroads.Service.Auth
 
         static NLog.Logger SetUpLogging()
         {
-            //TODO: Consider optional env variable for 'log level'
-
             var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == EnvironmentName.Development;
 
             var loggingConfig = new LoggingConfiguration();
