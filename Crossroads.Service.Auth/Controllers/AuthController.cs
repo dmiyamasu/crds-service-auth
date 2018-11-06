@@ -24,7 +24,6 @@ namespace Crossroads.Service.Auth.Controllers
         /// </summary>
         /// <returns>Returns AuthDTO</returns>
         /// <param name="Authorization">Authorization is an oauth2 access token.</param>
-        /// TODO: Add a description for authorization parameter
         [HttpGet("authorize")]
         public async Task<ActionResult<AuthDTO>> Get([FromHeader] string Authorization)
         {
