@@ -18,9 +18,6 @@ namespace Crossroads.Service.Auth.Models
 
     public class AuthenticationDTO
     {
-        [JsonProperty("Authenticated")]
-        public bool Authenticated { get; set; }
-
         [JsonProperty("Provider")]
         public string Provider { get; set; }
     }
@@ -29,6 +26,9 @@ namespace Crossroads.Service.Auth.Models
     {
         [JsonProperty("MpRoles")]
         public IDictionary<int, string> MpRoles { get; set; }
+
+        [JsonProperty("OktaRoles")]
+        public IDictionary<int, string> OktaRoles { get; set; }
     }
 
     public class UserInfoDTO
