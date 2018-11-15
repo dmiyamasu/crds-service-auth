@@ -3,21 +3,15 @@ using System;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Threading.Tasks;
-using Crossroads.Service.Auth.Configurations;
+using Crossroads.Service.Auth.Interfaces;
 using Crossroads.Service.Auth.Constants;
 using Crossroads.Service.Auth.Exceptions;
 
 namespace Crossroads.Service.Auth.Services
 {
-    public static class JwtService
+    public class JwtService : IJwtService
     {
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
-
-        public struct CrossroadsDecodedToken
-        {
-            public JwtSecurityToken decodedToken;
-            public string authProvider;
-        }
 
         struct JwtIssuer
         {
@@ -25,13 +19,13 @@ namespace Crossroads.Service.Auth.Services
             public OpenIdConnectConfiguration configuration;
         }
 
-        public static async Task<CrossroadsDecodedToken> DecodeAndValidateToken(string token, OIDConfigurations configurationFactory)
+        public async Task<CrossroadsDecodedToken> DecodeAndValidateToken(string token, IOIDConfigurationService configService)
         {
             JwtSecurityToken decodedToken = DecodeToken(token);
 
             // Get updated configurations for auth servers
-            var mpConfiguration = await configurationFactory.mpConfigurationManager.GetConfigurationAsync();
-            var oktaConfiguration = await configurationFactory.oktaConfigurationManager.GetConfigurationAsync();
+            var mpConfiguration = await configService.GetMpConfigAsync();
+            var oktaConfiguration = await configService.GetOktaConfigAsync();
 
             JwtIssuer issuer = GetAndValidateIssuer(decodedToken, mpConfiguration, oktaConfiguration);
 
@@ -46,7 +40,7 @@ namespace Crossroads.Service.Auth.Services
             return crossroadsDecodedToken;
         }
 
-        private static JwtSecurityToken DecodeToken(string token)
+        private JwtSecurityToken DecodeToken(string token)
         {
             try
             {
@@ -61,7 +55,7 @@ namespace Crossroads.Service.Auth.Services
             }
         }
 
-        private static JwtIssuer GetAndValidateIssuer(JwtSecurityToken decodedToken, OpenIdConnectConfiguration mpConfiguration, OpenIdConnectConfiguration oktaConfiguration)
+        private JwtIssuer GetAndValidateIssuer(JwtSecurityToken decodedToken, OpenIdConnectConfiguration mpConfiguration, OpenIdConnectConfiguration oktaConfiguration)
         {
             JwtIssuer issuer = new JwtIssuer();
 
@@ -85,7 +79,7 @@ namespace Crossroads.Service.Auth.Services
             return issuer;
         }
 
-        private static void ValidateToken(string token, OpenIdConnectConfiguration configuration)
+        private void ValidateToken(string token, OpenIdConnectConfiguration configuration)
         {
             var validationParameters = new TokenValidationParameters
             {

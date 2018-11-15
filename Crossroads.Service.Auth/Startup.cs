@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Crossroads.Service.Auth.Configurations;
 using Swashbuckle.AspNetCore.Swagger;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Service.Auth.Services;
@@ -35,9 +34,12 @@ namespace Crossroads.Service.Auth
             CrossroadsWebCommonConfig.Register(services);
 
             //Add services
-            OIDConfigurations configurationFactory = new OIDConfigurations();
-            services.AddSingleton(configurationFactory);
 
+            //Add singleton does not seem to actually add a singleton unless you create it and pass it in
+            IOIDConfigurationService configurationService = new OIDConfigurationService();
+            services.AddSingleton(configurationService);
+
+            services.AddSingleton<IJwtService, JwtService>();
             services.AddSingleton<IMpUserService, MpUserService>();
             services.AddSingleton<IOktaUserService, OktaUserService>();
             services.AddSingleton<IUserService, UserService>();

@@ -14,7 +14,6 @@ namespace Crossroads.Service.Auth.Services
         public int GetMpContactIdFromDecodedToken(CrossroadsDecodedToken decodedToken)
         {
             //TODO: Somehow read the contactId value
-            //TODO: See what happens when it can't find a contact Id
             return -1;
         }
 
