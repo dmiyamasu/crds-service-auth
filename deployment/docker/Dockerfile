@@ -4,16 +4,8 @@ WORKDIR /app
 # Copy files to /app 
 COPY . ./ 
  
-# Change working directory to Crossroads.Service.Finance
-WORKDIR /app/Crossroads.Service.Auth
-
-# Change work directory back to /app - root of proj 
-WORKDIR /app
- 
 # Run Unit Tests 
-# RUN dotnet test Crossroads.Service.Finance.Test/Crossroads.Service.Finance.Test.csproj 
-# RUN dotnet test MinistryPlatform.Test/MinistryPlatform.Test.csproj
-# RUN dotnet test Pushpay.Test/Pushpay.Test.csproj
+RUN dotnet test Crossroads.Service.Auth.Test/Crossroads.Service.Auth.Test.csproj 
  
 # Publish build to out directory 
 RUN dotnet publish -c Release -o out 

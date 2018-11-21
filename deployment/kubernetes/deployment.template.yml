@@ -9,7 +9,7 @@ spec:
     type: RollingUpdate 
     rollingUpdate: 
       maxSurge: 2
-      maxUnavailable: 0 
+      maxUnavailable: 0
   template: 
     metadata: 
       labels:
@@ -20,11 +20,11 @@ spec:
           image: crdschurch/crds-service-auth:$DOCKER_TAG
           imagePullPolicy: Always 
           ports: 
-            - containerPort: 80 
+            - containerPort: 80
           resources: 
             limits: 
               memory: "1Gi"
-              cpu: "500m" 
+              cpu: "500m"
             requests: 
               memory: "16Mi" 
               cpu: "100m" 
