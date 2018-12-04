@@ -65,3 +65,5 @@ spec:
               value: $CRDS_MP_COMMON_CLIENT_SECRET
             - name: MP_REST_API_ENDPOINT
               value: $MP_REST_API_ENDPOINT
+            - name: CRDS_ENV
+              value: $CRDS_ENV
