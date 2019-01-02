@@ -1,15 +1,12 @@
-using System;
 using Xunit;
 using Moq;
 using Crossroads.Service.Auth.Interfaces;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Service.Auth.Services;
 using System.Threading.Tasks;
-using Crossroads.Service.Auth.Models;
-using static Crossroads.Service.Auth.Services.JwtService;
-using Microsoft.IdentityModel.Tokens;
 using Crossroads.Service.Auth.Exceptions;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Crossroads.Web.Auth.Models;
 
 namespace Crossroads.Service.Auth.Tests
 {
@@ -66,8 +63,8 @@ namespace Crossroads.Service.Auth.Tests
         {
             _apiUserRepository.Setup(r => r.GetDefaultApiClientToken()).Returns("");
 
-            _userService.Setup(r => r.GetUserInfo(token, new CrossroadsDecodedToken(), "")).Returns(new UserInfoDTO());
-            _userService.Setup(r => r.GetAuthorizations(new CrossroadsDecodedToken(), "", 1234)).Returns(new AuthorizationDTO());
+            _userService.Setup(r => r.GetUserInfo(token, new CrossroadsDecodedToken(), "")).Returns(new UserInfo());
+            _userService.Setup(r => r.GetAuthorizations(new CrossroadsDecodedToken(), "", 1234)).Returns(new Authorization());
 
             string mpOpenIdConfig = @"{'scopes_supported': ['openid', 'offline_access', 'http://www.thinkministry.com/dataplatform/scopes/all'], 'userinfo_endpoint': 'https://adminint.crossroads.net/ministryplatformapi/oauth/connect/userinfo', 'revocation_endpoint': 'https://adminint.crossroads.net/ministryplatformapi/oauth/connect/revocation', 'jwks_uri': 'https://adminint.crossroads.net/ministryplatformapi/oauth/.well-known/jwks', 'introspection_endpoint': 'https://adminint.crossroads.net/ministryplatformapi/oauth/connect/introspect', 'frontchannel_logout_session_supported': true, 'frontchannel_logout_supported': true, 'code_challenge_methods_supported': ['plain', 'S256'], 'check_session_iframe': 'https://adminint.crossroads.net/ministryplatformapi/oauth/connect/checksession', 'grant_types_supported': ['authorization_code', 'client_credentials', 'password', 'refresh_token', 'implicit'], 'token_endpoint': 'https://adminint.crossroads.net/ministryplatformapi/oauth/connect/token', 'id_token_signing_alg_values_supported': ['RS256'], 'response_modes_supported': ['form_post', 'query', 'fragment'], 'subject_types_supported': ['public'], 'token_endpoint_auth_methods_supported': ['client_secret_post', 'client_secret_basic'], 'response_types_supported': ['code', 'token', 'id_token', 'id_token token', 'code id_token', 'code token', 'code id_token token'], 'claims_supported': [], 'end_session_endpoint': 'https://adminint.crossroads.net/ministryplatformapi/oauth/connect/endsession', 'authorization_endpoint': 'https://adminint.crossroads.net/ministryplatformapi/oauth/connect/authorize', 'issuer': 'Forms'}";
 

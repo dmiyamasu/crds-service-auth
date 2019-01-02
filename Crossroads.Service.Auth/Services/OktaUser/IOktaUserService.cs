@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using static Crossroads.Service.Auth.Services.JwtService;
+﻿using System.Collections.Generic;
 
 namespace Crossroads.Service.Auth.Interfaces
 {

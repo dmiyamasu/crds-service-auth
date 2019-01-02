@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Crossroads.Service.Auth.Models;
 using Crossroads.Service.Auth.Exceptions;
 using Microsoft.IdentityModel.Tokens;
 using Crossroads.Service.Auth.Interfaces;
+using Crossroads.Web.Auth.Models;
 
 namespace Crossroads.Service.Auth.Controllers
 {
