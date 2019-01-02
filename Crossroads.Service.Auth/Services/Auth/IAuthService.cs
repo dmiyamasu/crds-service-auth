@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Crossroads.Service.Auth.Models;
+using Crossroads.Web.Auth.Models;
 
 namespace Crossroads.Service.Auth.Interfaces
 {

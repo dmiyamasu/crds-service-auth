@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Crossroads.Service.Auth.Exceptions;
-using Crossroads.Service.Auth.Models;
+using Crossroads.Web.Auth.Models;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Models;
@@ -32,7 +30,7 @@ namespace Crossroads.Service.Auth.Services
             return contactId;
         }
 
-        public MpUserInfoDTO GetMpUserInfoFromContactId(int contactId, string mpAPIToken)
+        public MpUserInfo GetMpUserInfoFromContactId(int contactId, string mpAPIToken)
         {
             if (contactId > 0)
             {
@@ -69,7 +67,7 @@ namespace Crossroads.Service.Auth.Services
             return rolesDict;
         }
 
-        private MpUserInfoDTO GetMpUserInfo(int contactId, string mpAPIToken)
+        private MpUserInfo GetMpUserInfo(int contactId, string mpAPIToken)
         {
             var columns = new string[] {
                     "User_Account",
@@ -84,8 +82,8 @@ namespace Crossroads.Service.Auth.Services
                                         .WithSelectColumns(columns)
                                         .Build()
                                         .Get<MpContact>(contactId);
-
-            MpUserInfoDTO mpUserInfoDTO = new MpUserInfoDTO
+            
+            MpUserInfo mpUserInfoDTO = new MpUserInfo
             {
                 ContactId = contactId,
                 UserId = contact.UserAccount,

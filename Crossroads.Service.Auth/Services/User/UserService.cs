@@ -1,7 +1,6 @@
 ﻿using Crossroads.Service.Auth.Constants;
-using Crossroads.Service.Auth.Models;
+using Crossroads.Web.Auth.Models;
 using Microsoft.IdentityModel.Tokens;
-using static Crossroads.Service.Auth.Services.JwtService;
 using Crossroads.Service.Auth.Interfaces;
 
 namespace Crossroads.Service.Auth.Services
@@ -19,11 +18,11 @@ namespace Crossroads.Service.Auth.Services
             _oktaUserService = oktaUserService;
         }
 
-        public UserInfoDTO GetUserInfo(string originalToken,
+        public UserInfo GetUserInfo(string originalToken,
                                        CrossroadsDecodedToken crossroadsDecodedToken,
                                        string mpAPIToken)
         {
-            UserInfoDTO userInfoObject = new UserInfoDTO();
+            UserInfo userInfoObject = new UserInfo();
             int contactId = GetContactIdFromToken(originalToken, crossroadsDecodedToken);
 
             userInfoObject.Mp = _mpUserService.GetMpUserInfoFromContactId(contactId, mpAPIToken);
@@ -31,9 +30,9 @@ namespace Crossroads.Service.Auth.Services
             return userInfoObject;
         }
 
-        public AuthorizationDTO GetAuthorizations(CrossroadsDecodedToken crossroadsDecodedToken, string mpAPIToken, int mpContactId)
+        public Authorization GetAuthorizations(CrossroadsDecodedToken crossroadsDecodedToken, string mpAPIToken, int mpContactId)
         {
-            AuthorizationDTO authorizationObject = new AuthorizationDTO();
+            Authorization authorizationObject = new Authorization();
 
             if (crossroadsDecodedToken.authProvider == AuthConstants.AUTH_PROVIDER_OKTA)
             {

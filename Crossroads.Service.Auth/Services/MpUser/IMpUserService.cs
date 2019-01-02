@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Crossroads.Service.Auth.Models;
+using Crossroads.Web.Auth.Models;
 
 namespace Crossroads.Service.Auth.Interfaces
 {
@@ -7,7 +7,7 @@ namespace Crossroads.Service.Auth.Interfaces
     {
         int GetMpContactIdFromToken(string token);
 
-        MpUserInfoDTO GetMpUserInfoFromContactId(int contactId, string mpAPIToken);
+        MpUserInfo GetMpUserInfoFromContactId(int contactId, string mpAPIToken);
 
         Dictionary<int, string> GetRoles(string mpAPIToken, int mpContactId);
     }
