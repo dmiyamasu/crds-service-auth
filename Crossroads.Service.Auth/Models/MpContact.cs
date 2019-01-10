@@ -23,5 +23,8 @@ namespace MinistryPlatform.Models
 
         [JsonProperty(PropertyName = "Participant_Record")]
         public int? ParticipantRecord { get; set; }
+
+        [JsonProperty(PropertyName = "Can_Impersonate")]
+        public bool? CanImpersonate { get; set; }
     }
 }
