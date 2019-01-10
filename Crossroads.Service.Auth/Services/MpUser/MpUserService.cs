@@ -70,19 +70,30 @@ namespace Crossroads.Service.Auth.Services
         private MpUserInfo GetMpUserInfo(int contactId, string mpAPIToken)
         {
             var columns = new string[] {
+                    "Contacts.Contact_ID",
                     "User_Account",
                     "Donor_Record",
                     "Participant_Record",
                     "Email_Address",
-                    "Household_ID"
+                    "Household_ID",
+                    "User_Account_Table.Can_Impersonate"
                 };
 
-            var contact = _mpRestBuilder.NewRequestBuilder()
+            var result = _mpRestBuilder.NewRequestBuilder()
                                         .WithAuthenticationToken(mpAPIToken)
                                         .WithSelectColumns(columns)
+                                        .WithFilter("Contacts.Contact_ID=" + contactId.ToString())
                                         .Build()
-                                        .Get<MpContact>(contactId);
+                                        .Search<MpContact>();
             
+            if (result.Count != 1) {
+                string errorString = "Invalid result length for mp user info query. Num Results: " + result.Count.ToString();
+                _logger.Error(errorString);
+                throw new InvalidNumberOfResultsForMpContact(errorString);
+            }
+
+            var contact = result[0];
+
             MpUserInfo mpUserInfoDTO = new MpUserInfo
             {
                 ContactId = contactId,
@@ -90,7 +101,8 @@ namespace Crossroads.Service.Auth.Services
                 ParticipantId = contact.ParticipantRecord,
                 HouseholdId = contact.HouseholdId,
                 Email = contact.EmailAddress,
-                DonorId = contact.DonorRecord
+                DonorId = contact.DonorRecord,
+                CanImpersonate = contact.CanImpersonate
             };
 
             return mpUserInfoDTO;

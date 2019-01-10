@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Crossroads.Service.Auth.Exceptions
 {
     public class TokenMalformedException : Exception
@@ -22,6 +23,19 @@ namespace Crossroads.Service.Auth.Exceptions
         }
 
         public NoContactIdAvailableException(string message) : base(message)
+        {
+
+        }
+    }
+
+    public class InvalidNumberOfResultsForMpContact : Exception
+    {
+        public InvalidNumberOfResultsForMpContact() : base("Invalid number of results for mp contact id")
+        {
+
+        }
+
+        public InvalidNumberOfResultsForMpContact(string message) : base(message)
         {
 
         }

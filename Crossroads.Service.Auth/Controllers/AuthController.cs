@@ -48,6 +48,11 @@ namespace Crossroads.Service.Auth.Controllers
                 //Token was valid but we can't find an mp contact id
                 return StatusCode(400, ex.Message);
             }
+            catch (InvalidNumberOfResultsForMpContact)
+            {
+                //We looked up user info for the mpcontactid and go either 0 or more than 1 result.
+                return StatusCode(400, ex.Message);
+            }
             catch (SecurityTokenValidationException ex)
             {
                 //This is a generic exception that will catch either:
