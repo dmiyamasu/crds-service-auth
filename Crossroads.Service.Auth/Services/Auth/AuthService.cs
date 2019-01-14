@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Crossroads.Web.Common.MinistryPlatform;
-using Crossroads.Service.Auth.Models;
+using Crossroads.Web.Auth.Models;
 using Crossroads.Service.Auth.Interfaces;
 
 namespace Crossroads.Service.Auth.Services
@@ -34,11 +34,11 @@ namespace Crossroads.Service.Auth.Services
             // TODO: Cache the token
             string mpAPIToken = _apiUserRepository.GetDefaultApiClientToken();
 
-            UserInfoDTO userInfo = _userService.GetUserInfo(token, decodedToken, mpAPIToken);
+            UserInfo userInfo = _userService.GetUserInfo(token, decodedToken, mpAPIToken);
 
-            AuthorizationDTO authorizations = _userService.GetAuthorizations(decodedToken, mpAPIToken, userInfo.Mp.ContactId);
+            Authorization authorizations = _userService.GetAuthorizations(decodedToken, mpAPIToken, userInfo.Mp.ContactId);
 
-            AuthenticationDTO authentication = GetAuthentication(decodedToken);
+            Authentication authentication = GetAuthentication(decodedToken);
 
             AuthDTO responseObject = new AuthDTO
             {
@@ -50,9 +50,9 @@ namespace Crossroads.Service.Auth.Services
             return responseObject;
         }
 
-        private static AuthenticationDTO GetAuthentication(CrossroadsDecodedToken decodeTokenResponse)
+        private static Authentication GetAuthentication(CrossroadsDecodedToken decodeTokenResponse)
         {
-            AuthenticationDTO authentication = new AuthenticationDTO();
+            Authentication authentication = new Authentication();
 
             authentication.Provider = decodeTokenResponse.authProvider;
 

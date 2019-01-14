@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Crossroads.Service.Auth.Exceptions;
-using Crossroads.Service.Auth.Models;
+using Crossroads.Web.Auth.Models;
 using Crossroads.Web.Common.MinistryPlatform;
 using Crossroads.Web.Common.Security;
 using MinistryPlatform.Models;
@@ -32,7 +30,7 @@ namespace Crossroads.Service.Auth.Services
             return contactId;
         }
 
-        public MpUserInfoDTO GetMpUserInfoFromContactId(int contactId, string mpAPIToken)
+        public MpUserInfo GetMpUserInfoFromContactId(int contactId, string mpAPIToken)
         {
             if (contactId > 0)
             {
@@ -69,30 +67,42 @@ namespace Crossroads.Service.Auth.Services
             return rolesDict;
         }
 
-        private MpUserInfoDTO GetMpUserInfo(int contactId, string mpAPIToken)
+        private MpUserInfo GetMpUserInfo(int contactId, string mpAPIToken)
         {
             var columns = new string[] {
+                    "Contacts.Contact_ID",
                     "User_Account",
                     "Donor_Record",
                     "Participant_Record",
                     "Email_Address",
-                    "Household_ID"
+                    "Household_ID",
+                    "User_Account_Table.Can_Impersonate"
                 };
 
-            var contact = _mpRestBuilder.NewRequestBuilder()
+            var result = _mpRestBuilder.NewRequestBuilder()
                                         .WithAuthenticationToken(mpAPIToken)
                                         .WithSelectColumns(columns)
+                                        .WithFilter("Contacts.Contact_ID=" + contactId.ToString())
                                         .Build()
-                                        .Get<MpContact>(contactId);
+                                        .Search<MpContact>();
+            
+            if (result.Count != 1) {
+                string errorString = "Invalid result length for mp user info query. Num Results: " + result.Count.ToString();
+                _logger.Error(errorString);
+                throw new InvalidNumberOfResultsForMpContact(errorString);
+            }
 
-            MpUserInfoDTO mpUserInfoDTO = new MpUserInfoDTO
+            var contact = result[0];
+
+            MpUserInfo mpUserInfoDTO = new MpUserInfo
             {
                 ContactId = contactId,
                 UserId = contact.UserAccount,
                 ParticipantId = contact.ParticipantRecord,
                 HouseholdId = contact.HouseholdId,
                 Email = contact.EmailAddress,
-                DonorId = contact.DonorRecord
+                DonorId = contact.DonorRecord,
+                CanImpersonate = contact.CanImpersonate
             };
 
             return mpUserInfoDTO;

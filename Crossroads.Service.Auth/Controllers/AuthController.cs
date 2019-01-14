@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Crossroads.Service.Auth.Models;
 using Crossroads.Service.Auth.Exceptions;
 using Microsoft.IdentityModel.Tokens;
 using Crossroads.Service.Auth.Interfaces;
+using Crossroads.Web.Auth.Models;
 
 namespace Crossroads.Service.Auth.Controllers
 {
@@ -46,6 +46,11 @@ namespace Crossroads.Service.Auth.Controllers
             catch (NoContactIdAvailableException ex)
             {
                 //Token was valid but we can't find an mp contact id
+                return StatusCode(400, ex.Message);
+            }
+            catch (InvalidNumberOfResultsForMpContact ex)
+            {
+                //We looked up user info for the mpcontactid and go either 0 or more than 1 result.
                 return StatusCode(400, ex.Message);
             }
             catch (SecurityTokenValidationException ex)
