@@ -30,13 +30,23 @@ namespace Crossroads.Service.Auth.Services
         {
             CrossroadsDecodedToken decodedToken = await _jwtService.DecodeAndValidateToken(token, _configService);
 
-            // TODO: Consider using a Client API Token (ex: FRED)
-            // TODO: Cache the token
-            string mpAPIToken = _apiUserRepository.GetDefaultApiClientToken();
+            UserInfo userInfo = null;
+            Authorization authorizations = null;
 
-            UserInfo userInfo = _userService.GetUserInfo(token, decodedToken, mpAPIToken);
+            if (_jwtService.TokenIsOpenId(decodedToken))
+            {
+                // TODO: Consider using a Client API Token (ex: FRED)
+                // TODO: Cache the token
+                string mpAPIToken = _apiUserRepository.GetDefaultApiClientToken();
 
-            Authorization authorizations = _userService.GetAuthorizations(decodedToken, mpAPIToken, userInfo.Mp.ContactId);
+                userInfo = _userService.GetUserInfo(token, decodedToken, mpAPIToken);
+
+                authorizations = _userService.GetAuthorizations(decodedToken, mpAPIToken, userInfo.Mp.ContactId);
+            }
+            else //This is not a user token so we can't get user info or user roles... Just allow it to happen I guess?
+            {
+                
+            }
 
             Authentication authentication = GetAuthentication(decodedToken);
 
