@@ -28,27 +28,28 @@ namespace Crossroads.Service.Auth.Services
 
         public async Task<AuthDTO> GetAuthorization(string token)
         {
+            _logger.Info("Decoding Token");
             CrossroadsDecodedToken decodedToken = await _jwtService.DecodeAndValidateToken(token, _configService);
+            _logger.Info("Token Decoded");
 
             UserInfo userInfo = null;
             Authorization authorizations = null;
 
-            if (_jwtService.TokenIsOpenId(decodedToken))
-            {
-                // TODO: Consider using a Client API Token (ex: FRED)
-                // TODO: Cache the token
-                string mpAPIToken = _apiUserRepository.GetDefaultApiClientToken();
+            _logger.Info("Getting API Token");
+            string mpAPIToken = _apiUserRepository.GetDefaultApiClientToken();
+            _logger.Info("API Token Retrieved");
 
-                userInfo = _userService.GetUserInfo(token, decodedToken, mpAPIToken);
+            _logger.Info("Getting User Info");
+            userInfo = _userService.GetUserInfo(token, decodedToken, mpAPIToken);
+            _logger.Info("User Info Retrieved");
 
-                authorizations = _userService.GetAuthorizations(decodedToken, mpAPIToken, userInfo.Mp.ContactId);
-            }
-            else //This is not a user token so we can't get user info or user roles... Just allow it to happen I guess?
-            {
-                
-            }
+            _logger.Info("Getting Authorizations");
+            authorizations = _userService.GetAuthorizations(decodedToken, mpAPIToken, userInfo.Mp.ContactId);
+            _logger.Info("Authorizations Retrieved");
 
+            _logger.Info("Getting Authentication");
             Authentication authentication = GetAuthentication(decodedToken);
+            _logger.Info("Authentication Retrieved");
 
             AuthDTO responseObject = new AuthDTO
             {
