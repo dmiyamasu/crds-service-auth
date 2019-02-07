@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Crossroads.Service.Auth.Interfaces;
 using Crossroads.Service.Auth.Constants;
 using Crossroads.Service.Auth.Exceptions;
+using System.Security.Claims;
 
 namespace Crossroads.Service.Auth.Services
 {
@@ -17,6 +18,24 @@ namespace Crossroads.Service.Auth.Services
         {
             public string authProvider;
             public OpenIdConnectConfiguration configuration;
+        }
+
+        public bool TokenIsOpenId(CrossroadsDecodedToken decodedToken)
+        {
+            bool isOpenId = false;
+            foreach (Claim claim in decodedToken.decodedToken.Claims)
+            {
+                if (claim.Type == "scope")
+                {
+                    if (claim.Value == "openid")
+                    {
+                        isOpenId = true;
+                        break;
+                    }
+                }
+            }
+
+            return isOpenId;
         }
 
         public async Task<CrossroadsDecodedToken> DecodeAndValidateToken(string token, IOIDConfigurationService configService)

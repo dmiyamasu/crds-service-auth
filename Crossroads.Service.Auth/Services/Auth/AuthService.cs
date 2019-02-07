@@ -30,13 +30,14 @@ namespace Crossroads.Service.Auth.Services
         {
             CrossroadsDecodedToken decodedToken = await _jwtService.DecodeAndValidateToken(token, _configService);
 
-            // TODO: Consider using a Client API Token (ex: FRED)
-            // TODO: Cache the token
+            UserInfo userInfo = null;
+            Authorization authorizations = null;
+
             string mpAPIToken = _apiUserRepository.GetDefaultApiClientToken();
 
-            UserInfo userInfo = _userService.GetUserInfo(token, decodedToken, mpAPIToken);
+            userInfo = _userService.GetUserInfo(token, decodedToken, mpAPIToken);
 
-            Authorization authorizations = _userService.GetAuthorizations(decodedToken, mpAPIToken, userInfo.Mp.ContactId);
+            authorizations = _userService.GetAuthorizations(decodedToken, mpAPIToken, userInfo.Mp.ContactId);
 
             Authentication authentication = GetAuthentication(decodedToken);
 
