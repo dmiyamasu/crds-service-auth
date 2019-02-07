@@ -27,7 +27,6 @@ namespace Crossroads.Service.Auth.Controllers
         [HttpGet("authorize")]
         public async Task<ActionResult<AuthDTO>> Get([FromHeader] string Authorization)
         {
-            _logger.Info("Request Received, Origin: " + Request.Headers["Origin"]);
             try
             {
                 AuthDTO authDTO = await _authService.GetAuthorization(Authorization);
