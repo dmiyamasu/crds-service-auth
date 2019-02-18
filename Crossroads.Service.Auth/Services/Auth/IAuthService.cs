@@ -5,6 +5,6 @@ namespace Crossroads.Service.Auth.Interfaces
 {
     public interface IAuthService
     {
-        Task<AuthDTO> GetAuthorization(string token);
+        Task<AuthDTO> GetAuthorization(string token, string impersonateUserName);
     }
 }

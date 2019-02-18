@@ -19,11 +19,19 @@ namespace Crossroads.Service.Auth.Services
         }
 
         public UserInfo GetUserInfo(string originalToken,
-                                       CrossroadsDecodedToken crossroadsDecodedToken,
-                                       string mpAPIToken)
+                                    string impersonateUserId,
+                                    CrossroadsDecodedToken crossroadsDecodedToken,
+                                    string mpAPIToken)
         {
             UserInfo userInfoObject = new UserInfo();
             int contactId = GetContactIdFromToken(originalToken, crossroadsDecodedToken);
+
+            if (impersonateUserId != null)
+            {
+                // Check to see if the original token has the impersonateUser property
+                // If they don't return an error about trying to impersonate when they aren't allowed
+                // If they do then lets get the contact id for the user they are trying to impersonate instead
+            }
 
             userInfoObject.Mp = _mpUserService.GetMpUserInfoFromContactId(contactId, mpAPIToken);
 
@@ -42,6 +50,11 @@ namespace Crossroads.Service.Auth.Services
             authorizationObject.MpRoles = _mpUserService.GetRoles(mpAPIToken, mpContactId);
 
             return authorizationObject;
+        }
+
+        private bool UserCanImpersonate(string username)
+        {
+            
         }
 
         private int GetContactIdFromToken(string originalToken, CrossroadsDecodedToken crossroadsDecodedToken)

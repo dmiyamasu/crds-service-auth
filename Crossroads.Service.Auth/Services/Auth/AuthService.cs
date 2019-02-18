@@ -26,7 +26,7 @@ namespace Crossroads.Service.Auth.Services
             _jwtService = jwtService;
         }
 
-        public async Task<AuthDTO> GetAuthorization(string token)
+        public async Task<AuthDTO> GetAuthorization(string token, string impersonateUserName)
         {
             CrossroadsDecodedToken decodedToken = await _jwtService.DecodeAndValidateToken(token, _configService);
 

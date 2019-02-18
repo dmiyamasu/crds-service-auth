@@ -25,11 +25,11 @@ namespace Crossroads.Service.Auth.Controllers
         /// <returns>Returns AuthDTO</returns>
         /// <param name="Authorization">Authorization is an oauth2 access token.</param>
         [HttpGet("authorize")]
-        public async Task<ActionResult<AuthDTO>> Get([FromHeader] string Authorization)
+        public async Task<ActionResult<AuthDTO>> Get([FromHeader] string Authorization, [FromHeader] string ImpersonateUserId)
         {
             try
             {
-                AuthDTO authDTO = await _authService.GetAuthorization(Authorization);
+                AuthDTO authDTO = await _authService.GetAuthorization(Authorization, ImpersonateUserId);
 
                 return authDTO;
             }

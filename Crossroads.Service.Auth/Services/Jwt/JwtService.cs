@@ -48,7 +48,7 @@ namespace Crossroads.Service.Auth.Services
 
             JwtIssuer issuer = GetAndValidateIssuer(decodedToken, mpConfiguration, oktaConfiguration);
 
-            ValidateToken(token, issuer.configuration);
+            ValidateToken(token, issuer);
 
             CrossroadsDecodedToken crossroadsDecodedToken = new CrossroadsDecodedToken
             {
@@ -98,29 +98,42 @@ namespace Crossroads.Service.Auth.Services
             return issuer;
         }
 
-        private void ValidateToken(string token, OpenIdConnectConfiguration configuration)
+        private void ValidateToken(string token, JwtIssuer issuer)
         {
-            var validationParameters = new TokenValidationParameters
-            {
-                // Clock skew compensates for server time drift.
-                // We recommend 5 minutes or less:
-                ClockSkew = TimeSpan.FromMinutes(5),
-                // Specify the key used to sign the token:
-                IssuerSigningKeys = configuration.SigningKeys,
-                RequireSignedTokens = true,
-                // Ensure the token hasn't expired:
-                RequireExpirationTime = true,
-                ValidateLifetime = true,
-                // Ensure the token audience matches our audience value (default true):
-                ValidateAudience = false,
-                // Ensure the token was issued by a trusted authorization server (default true):
-                ValidateIssuer = false
-            };
+            var validationParameters = GetValidationParameters(issuer);
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
             SecurityToken decodedToken;
             tokenHandler.ValidateToken(token, validationParameters, out decodedToken);
+        }
+
+        private TokenValidationParameters GetValidationParameters (JwtIssuer issuer)
+        {
+            bool validateLifetime = true;
+
+            // If the token was from mp we have some funky logic that refreshes the token elsewhere
+            if (issuer.authProvider == AuthConstants.AUTH_PROVIDER_MP)
+            {
+                validateLifetime = false;
+            }
+
+            return new TokenValidationParameters
+            {
+                // Clock skew compensates for server time drift.
+                // We recommend 5 minutes or less:
+                ClockSkew = TimeSpan.FromMinutes(5),
+                // Specify the key used to sign the token:
+                IssuerSigningKeys = issuer.configuration.SigningKeys,
+                RequireSignedTokens = true,
+                // Ensure the token hasn't expired:
+                RequireExpirationTime = validateLifetime,
+                ValidateLifetime = validateLifetime,
+                // Ensure the token audience matches our audience value (default true):
+                ValidateAudience = false,
+                // Ensure the token was issued by a trusted authorization server (default true):
+                ValidateIssuer = false
+            };
         }
     }
 }
