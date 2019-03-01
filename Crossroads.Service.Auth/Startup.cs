@@ -22,6 +22,21 @@ namespace Crossroads.Service.Auth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                builder =>
+                {
+                    builder
+                        .SetIsOriginAllowedToAllowWildcardSubdomains()
+                        .WithOrigins("http://*.crossroads.net",
+                                     "https://*.crossroads.net")
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .AllowAnyHeader();
+                });
+            });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Register the Swagger generator, defining 1 or more Swagger documents
@@ -68,6 +83,8 @@ namespace Crossroads.Service.Auth
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "crds-service-auth");
                 c.RoutePrefix = string.Empty;
             });
+
+            app.UseCors("CorsPolicy");
 
             // app.UseHttpsRedirection();
             app.UseMvc();
