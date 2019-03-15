@@ -32,7 +32,4 @@
     <Content Remove="nlog.config" />
     <Content Remove="newrelic.config" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="newrelic.config" />
-  </ItemGroup>
 </Project>
