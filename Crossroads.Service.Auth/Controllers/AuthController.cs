@@ -41,17 +41,17 @@ namespace Crossroads.Service.Auth.Controllers
             catch (SecurityTokenInvalidIssuerException ex)
             {
                 //The issuer of the token was invalid - we are expecting okta or mp
-                return StatusCode(400, ex.Message);
+                return StatusCode(401, ex.Message);
             }
             catch (NoContactIdAvailableException ex)
             {
                 //Token was valid but we can't find an mp contact id
-                return StatusCode(400, ex.Message);
+                return StatusCode(500, ex.Message);
             }
             catch (InvalidNumberOfResultsForMpContact ex)
             {
-                //We looked up user info for the mpcontactid and go either 0 or more than 1 result.
-                return StatusCode(400, ex.Message);
+                //We looked up user info for the mpcontactid and got either 0 or more than 1 result.
+                return StatusCode(500, ex.Message);
             }
             catch (SecurityTokenValidationException ex)
             {
@@ -60,7 +60,7 @@ namespace Crossroads.Service.Auth.Controllers
                 //2. Token signing keys are not valid
                 //All other exceptions are logged when the exception is thrown
                 _logger.Debug(ex.Message);
-                return StatusCode(400, ex.Message);
+                return StatusCode(403, ex.Message);
             }
         }
     }
