@@ -7,6 +7,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Service.Auth.Services;
 using Crossroads.Service.Auth.Interfaces;
+using NewRelic.Api.Agent;
 
 namespace Crossroads.Service.Auth
 {
