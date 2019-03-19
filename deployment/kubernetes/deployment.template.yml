@@ -45,22 +45,14 @@ spec:
             successThreshold: 1
             periodSeconds: 10
           env: 
-            - name: ASPNETCORE_ENVIRONMENT
-              value: $ASPNETCORE_ENVIRONMENT
             - name: MP_OAUTH_BASE_URL
               value: $MP_OAUTH_BASE_URL
-            - name: OKTA_OAUTH_BASE_URL
-              value: $OKTA_OAUTH_BASE_URL
             - name: NEW_RELIC_LICENSE_KEY            
               value: $NR_INSTALL_KEY
             - name: NEW_RELIC_APP_NAME
               value: $NR_APP_NAME
             - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
               value: $NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-            - name: LOGZ_IO_KEY
-              value: $LOGZ_IO_KEY
-            - name: APP_NAME
-              value: $APP_NAME
             - name: CRDS_MP_COMMON_CLIENT_ID
               value: $CRDS_MP_COMMON_CLIENT_ID
             - name: CRDS_MP_COMMON_CLIENT_SECRET
