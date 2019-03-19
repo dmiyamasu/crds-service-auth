@@ -7,7 +7,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using Crossroads.Web.Common.Configuration;
 using Crossroads.Service.Auth.Services;
 using Crossroads.Service.Auth.Interfaces;
-using NewRelic.Api.Agent;
+using Crossroads.Microservice.Settings;
+using Crossroads.Microservice.Logging;
 
 namespace Crossroads.Service.Auth
 {
@@ -31,14 +32,20 @@ namespace Crossroads.Service.Auth
                 c.SwaggerDoc("v1", new Info { Title = "crds-service-auth", Version = "v1" });
             });
 
+            SettingsService settingsService = new SettingsService();
+            services.AddSingleton<ISettingsService>(settingsService);
+
+            //Logging
+            Logger.SetUpLogging(settingsService);
+
             // Register all the webcommon stuff
             CrossroadsWebCommonConfig.Register(services);
 
             //Add services
 
             //Add singleton does not seem to actually add a singleton unless you create it and pass it in
-            IOIDConfigurationService configurationService = new OIDConfigurationService();
-            services.AddSingleton(configurationService);
+            OIDConfigurationService configurationService = new OIDConfigurationService(settingsService);
+            services.AddSingleton<IOIDConfigurationService>(configurationService);
 
             services.AddSingleton<IJwtService, JwtService>();
             services.AddSingleton<IMpUserService, MpUserService>();
@@ -71,6 +78,7 @@ namespace Crossroads.Service.Auth
             });
 
             // app.UseHttpsRedirection();
+
             app.UseMvc();
         }
     }
