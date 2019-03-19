@@ -20,24 +20,6 @@ namespace Crossroads.Service.Auth.Services
             public OpenIdConnectConfiguration configuration;
         }
 
-        public bool TokenIsOpenId(CrossroadsDecodedToken decodedToken)
-        {
-            bool isOpenId = false;
-            foreach (Claim claim in decodedToken.decodedToken.Claims)
-            {
-                if (claim.Type == "scope")
-                {
-                    if (claim.Value == "openid")
-                    {
-                        isOpenId = true;
-                        break;
-                    }
-                }
-            }
-
-            return isOpenId;
-        }
-
         public async Task<CrossroadsDecodedToken> DecodeAndValidateToken(string token, IOIDConfigurationService configService)
         {
             JwtSecurityToken decodedToken = DecodeToken(token);
@@ -61,17 +43,18 @@ namespace Crossroads.Service.Auth.Services
 
         private JwtSecurityToken DecodeToken(string token)
         {
-            try
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            bool canValidateToken = tokenHandler.CanReadToken(token);
+
+            if (!canValidateToken)
             {
-                JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-                JwtSecurityToken decodedToken = tokenHandler.ReadJwtToken(token);
-                return decodedToken;
+                string errorMessage = "Unable to decode token, it was malformed, empty, or null";
+                _logger.Info(errorMessage);
+                throw new TokenMalformedException(errorMessage);
             }
-            catch (ArgumentException ex)
-            {
-                _logger.Debug(ex.Message);
-                throw new TokenMalformedException(ex.Message);
-            }
+
+            JwtSecurityToken decodedToken = tokenHandler.ReadJwtToken(token);
+            return decodedToken;
         }
 
         private JwtIssuer GetAndValidateIssuer(JwtSecurityToken decodedToken, OpenIdConnectConfiguration mpConfiguration, OpenIdConnectConfiguration oktaConfiguration)
@@ -90,8 +73,8 @@ namespace Crossroads.Service.Auth.Services
             }
             else
             {
-                string exceptionMessage = "The token issuer: " + decodedToken.Issuer + " was invalid";
-                _logger.Debug(exceptionMessage);
+                string exceptionMessage = $"The token issuer: {decodedToken.Issuer} was invalid";
+                _logger.Warn(exceptionMessage);
                 throw new SecurityTokenInvalidIssuerException(exceptionMessage);
             }
 
@@ -100,6 +83,11 @@ namespace Crossroads.Service.Auth.Services
 
         private void ValidateToken(string token, OpenIdConnectConfiguration configuration)
         {
+            if (configuration.SigningKeys == null)
+            {
+                throw new ConfigurationSigningKeysIsNull();
+            }
+
             var validationParameters = new TokenValidationParameters
             {
                 // Clock skew compensates for server time drift.
