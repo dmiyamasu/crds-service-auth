@@ -14,6 +14,5 @@ namespace Crossroads.Service.Auth.Interfaces
     public interface IJwtService
     {
         Task<CrossroadsDecodedToken> DecodeAndValidateToken(string token, IOIDConfigurationService configService);
-        bool TokenIsOpenId(CrossroadsDecodedToken decodedToken);
     }
 }

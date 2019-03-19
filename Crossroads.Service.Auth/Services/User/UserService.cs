@@ -2,6 +2,7 @@
 using Crossroads.Web.Auth.Models;
 using Microsoft.IdentityModel.Tokens;
 using Crossroads.Service.Auth.Interfaces;
+using Crossroads.Service.Auth.Exceptions;
 
 namespace Crossroads.Service.Auth.Services
 {
@@ -59,8 +60,15 @@ namespace Crossroads.Service.Auth.Services
             else
             {
                 //This should never happen based on previous logic
-                _logger.Error("Invalid issuer when there should not be an invalid issuer w/ token: " + originalToken);
+                _logger.Warn("Invalid issuer when there should not be an invalid issuer w/ token: " + originalToken);
                 throw new SecurityTokenInvalidIssuerException();
+            }
+
+            if (contactId == -1)
+            {
+                string exceptionString = $"No mpContactID available for JWT with issuer: {crossroadsDecodedToken.authProvider}, and JWT id: {crossroadsDecodedToken.decodedToken.Id}";
+                _logger.Error(exceptionString);
+                throw new NoContactIdAvailableException(exceptionString);
             }
 
             return contactId;

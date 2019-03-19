@@ -6,9 +6,16 @@ namespace Crossroads.Service.Auth.Services
 {
     public class OktaUserService : IOktaUserService
     {
+        private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
         public int GetMpContactIdFromDecodedToken(CrossroadsDecodedToken decodedToken)
         {
             int mpContactId = -1;
+
+            if (decodedToken.decodedToken.Claims == null)
+            {
+                return mpContactId;
+            }
 
             foreach (Claim claim in decodedToken.decodedToken.Claims)
             {

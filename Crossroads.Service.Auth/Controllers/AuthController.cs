@@ -54,6 +54,10 @@ namespace Crossroads.Service.Auth.Controllers
                 //We looked up user info for the mpcontactid and got either 0 or more than 1 result.
                 return CreateErrorResponse(500, ex);
             }
+            catch (ConfigurationSigningKeysIsNull ex)
+            {
+                return CreateErrorResponse(500, ex);
+            }
             catch (SecurityTokenValidationException ex)
             {
                 //This is a generic exception that will catch either:
