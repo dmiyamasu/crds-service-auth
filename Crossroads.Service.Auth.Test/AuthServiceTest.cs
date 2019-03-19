@@ -32,7 +32,7 @@ namespace Crossroads.Service.Auth.Tests
         [Fact]
         public async Task GetAuthorization_ThrowsException_TokenMalformedException_TokenMalformed()
         {
-            string malformedToken = "eyJ0eXAiOiJKV1Qng1dCI6Ijkyc3c1bmhtbjBQS3N0T0k1YS1nVVZlUC1NWSIsImtpZCI6Ijkyc3c1bmhtbjBQS3N0T0k1YS1nVVZlUC1NWSJ9.eyJpc3MiOiJGb3JtcyIsImF1ZCI6IkZvcm1zL3Jlc291cmNlcyIsImV4cCI6MTU0MjIwNTI5MCwibmJmIjoxNTQyMjAzNDkwLCJjbGllbnRfaWQiOiJDUkRTLkNvbW1vbiIsInNjb3BlIjpbIm9wZW5pZCIsIm9mZmxpbmVfYWNjZXNzIiwiaHR0cDovL3d3dy50aGlua21pbmlzdHJ5LmNvbS9kYXRhcGxhdGZvcm0vc2NvcGVzL2FsbCJdLCJzdWIiOiJiZDg4ZTk3Mi00ZDEwLTRmNzAtOGM3Zi04ZTUzZTg5YTAwNDgiLCJhdXRoX3RpbWUiOjE1Mzk5NTE4NDEsImlkcCI6Imlkc3J2IiwibmFtZSI6ImRjb3VydHNAY2FsbGlicml0eS5jb20iLCJhbXIiOlsicGFzc3dvcmQiXX0.qxK20cNWbiw8hU9FLRVoiI-ivJKri6SORst1Z1l2oTHoeE6iiJe2s18vWLsWrNHLkFdGlTfOd-W-TrWl3SVO4vy03lJcz9tEq6Fkg61eoA7MyY2_R2kF514QROvsxRr_IDITiDPD_ZRKovjjCYz_BzOiHyWq6Nrx5Kqw1sEwrD8gBCFzfTJW600XCesA1GODGUr-zOOexsNVwqBTTm-zGCh_IyCUBjwZsCE1iEpUKu2JKnt79kXP_BwfV0uucXvaZWu7-YTCsIFsQhg_BReI9yK1w8o-qX2EUknWsE42o7_ETy-ku8_NN3Zqde5CC_UrIEbpnFeOyf8xJfp-AmXdeA";
+            string malformedToken = "a;sldkfjasl;dfjka;lsdfjka;sldfjkas;ldfjasdf";
 
             SetupForTokenMalformedException(malformedToken);
 
