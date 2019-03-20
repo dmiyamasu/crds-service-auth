@@ -61,3 +61,7 @@ spec:
               value: $MP_REST_API_ENDPOINT
             - name: CRDS_ENV
               value: $CRDS_ENV
+            - name: VAULT_ROLE_ID
+              value: $VAULT_ROLE_ID
+            - name: VAULT_SECRET_ID
+              value: $VAULT_SECRET_ID
