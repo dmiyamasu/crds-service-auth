@@ -60,7 +60,13 @@ namespace Crossroads.Service.Auth.Services
                                       .Build()
                                       .Search<JObject>("dp_User_Roles");
 
-            foreach (var role in roles) {
+            if (roles == null)
+            {
+                return rolesDict;
+            }
+
+            foreach (var role in roles)
+            {
                 rolesDict.Add(role.Value<int>("Role_ID"), role.Value<string>("Role_Name"));
             }
 
@@ -102,7 +108,7 @@ namespace Crossroads.Service.Auth.Services
                 HouseholdId = contact.HouseholdId,
                 Email = contact.EmailAddress,
                 DonorId = contact.DonorRecord,
-                CanImpersonate = contact.CanImpersonate
+                CanImpersonate = contact.CanImpersonate ?? false
             };
 
             return mpUserInfoDTO;

@@ -40,4 +40,17 @@ namespace Crossroads.Service.Auth.Exceptions
 
         }
     }
+
+    public class ConfigurationSigningKeysIsNull : Exception
+    {
+        public ConfigurationSigningKeysIsNull() : base("The signing keys associated with the issuer oauth configuration are null")
+        {
+
+        }
+
+        public ConfigurationSigningKeysIsNull(string message) : base(message)
+        {
+
+        }
+    }
 }
