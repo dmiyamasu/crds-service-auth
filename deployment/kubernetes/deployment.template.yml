@@ -45,20 +45,12 @@ spec:
             successThreshold: 1
             periodSeconds: 10
           env: 
-            - name: MP_OAUTH_BASE_URL
-              value: $MP_OAUTH_BASE_URL
             - name: NEW_RELIC_LICENSE_KEY            
               value: $NR_INSTALL_KEY
             - name: NEW_RELIC_APP_NAME
               value: $NR_APP_NAME
             - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
               value: $NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
-            - name: CRDS_MP_COMMON_CLIENT_ID
-              value: $CRDS_MP_COMMON_CLIENT_ID
-            - name: CRDS_MP_COMMON_CLIENT_SECRET
-              value: $CRDS_MP_COMMON_CLIENT_SECRET
-            - name: MP_REST_API_ENDPOINT
-              value: $MP_REST_API_ENDPOINT
             - name: CRDS_ENV
               value: $CRDS_ENV
             - name: VAULT_ROLE_ID
