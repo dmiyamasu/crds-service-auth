@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -32,14 +32,25 @@ namespace Crossroads.Service.Auth
                 c.SwaggerDoc("v1", new Info { Title = "crds-service-auth", Version = "v1" });
             });
 
+            string vaultRoleId = System.Environment.GetEnvironmentVariable("VAULT_ROLE_ID");
+            string vaultSecretId = System.Environment.GetEnvironmentVariable("VAULT_SECRET_ID");
             SettingsService settingsService = new SettingsService();
             services.AddSingleton<ISettingsService>(settingsService);
 
             //Logging
-            Logger.SetUpLogging(settingsService);
+            Logger.SetUpLogging(settingsService.GetSetting("LOGZIO_API_TOKEN"), settingsService.GetSetting("CRDS_ENV"));
 
             // Register all the webcommon stuff
-            CrossroadsWebCommonConfig.Register(services);
+            WebCommonSettingsConfig webCommonConfig = new WebCommonSettingsConfig(
+                null,
+                settingsService.GetSetting("MP_OAUTH_BASE_URL"),
+                settingsService.GetSetting("MP_REST_API_ENDPOINT"),
+                settingsService.GetSetting("CRDS_MP_COMMON_CLIENT_ID"),
+                settingsService.GetSetting("CRDS_MP_COMMON_CLIENT_SECRET"),
+                null,
+                null
+            );
+            CrossroadsWebCommonConfig.Register(services, webCommonConfig);
 
             //Add services
 
