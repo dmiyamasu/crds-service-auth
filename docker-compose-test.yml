@@ -1,0 +1,21 @@
+version: '3' 
+services: 
+  CrossroadsServiceAuth: 
+    build: 
+      context: .
+      dockerfile: ./deployment/docker/Dockerfile
+    container_name: crds-service-auth
+    image: crdschurch/crds-service-auth:${DOCKER_TAG:-local}
+    env_file:
+      - .env
+    ports:
+      - "5000:80"
+  CypressTest:
+    build: ./Crossroads.Service.Auth.IntegrationTest
+    container_name: cypress-test
+    image: cypress/base:8
+    depends_on:
+      - CrossroadsServiceAuth
+    environment:
+      - BASE_URL=http://CrossroadsServiceAuth
+    command: npx cypress run
