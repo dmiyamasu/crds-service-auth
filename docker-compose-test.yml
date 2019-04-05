@@ -1,7 +1,7 @@
-version: '3' 
-services: 
-  CrossroadsServiceAuth: 
-    build: 
+version: '3'
+services:
+  CrossroadsServiceAuth:
+    build:
       context: .
       dockerfile: ./deployment/docker/Dockerfile
     container_name: crds-service-auth
@@ -17,5 +17,5 @@ services:
     depends_on:
       - CrossroadsServiceAuth
     environment:
-      - BASE_URL=http://CrossroadsServiceAuth
+      - CYPRESS_baseUrl=CrossroadsServiceAuth
     command: npx cypress run

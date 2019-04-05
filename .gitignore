@@ -39,3 +39,5 @@ msbuild.wrn
 # Cypress integration tests
 Crossroads.Service.Auth.IntegrationTest/node_modules
 Crossroads.Service.Auth.IntegrationTest/cypress/integration/examples
+Crossroads.Service.Auth.IntegrationTest/cypress/screenshots
+Crossroads.Service.Auth.IntegrationTest/cypress/videos
