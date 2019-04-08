@@ -1,41 +1,55 @@
 //TODO need to do this based on env - can have access to vault?
-function getEnvPrefix() {
-  return 'int';
-}
-//TODO pass in the full url?
 describe('Tests response for current MP tokens', function () {
-  let sessionId;
+  let authResponse;
   before(function () {
-    const envPrefix = getEnvPrefix();
     cy.request({
       method: 'POST',
-      url: `https://gateway${envPrefix}.crossroads.net/gateway/api/login`,
+      url: `${Cypress.env('MP_LOGIN_ENDPOINT')}/gateway/api/login`,
       body: { username: `${Cypress.env('AUTH_USER_EMAIL')}`, password: `${Cypress.env('AUTH_USER_PW')}` },
       log: false
     }).then(response => {
-      sessionId = response.body.userToken;
+      return response.body.userToken;
+
       //cy.setCookie('userId', response.body.userId.toString(), { domain: domain, log: false });
+    }).then(sessionId => {
+      cy.request({
+        method: 'GET',
+        url: `${Cypress.config().baseUrl}/api/authorize`,
+        headers: { Authorization: sessionId }
+      }).then(response => {
+        expect(response.status).to.eq(200);
+        // //Want the call to 'fail' if it takes too long to respond? We can do this!
+        expect(response.duration).to.be.lte(1000);
+
+        authResponse = response;//.body;
+      });
     });
   });
 
   it('Request authenticated by MP', function () {
-    cy.request({
-      method: 'GET',
-      url: `${Cypress.config().baseUrl}/api/authorize`,
-      headers: { Authorization: sessionId }
-    }).then(response => {
-      expect(response.body).to.contain('cats');
-      //expect(response.body).to.contain(malformedResponse);
-      expect(response.body).to.have.nested.property('Authentication.Provider');
-      expect(response.status).to.eq(200);
+    cy.wrap({ authResponse }).its('authResponse.body').should('have.property', 'Authentication').and('have.property', 'Provider', 'mp');
+  });
 
+  it('Request contains MpRoles', function () {
 
-
-      //Want the call to 'fail' if it takes too long to respond? We can do this!
-      expect(response.duration).to.be.lte(1000);
+    cy.wrap({ authResponse }).its('authResponse.body').should('have.property', 'Authorization').should('have.property', 'MpRoles').then(mpRoles => {
+      expect(mpRoles).to.have.property('39', 'All Platform Users');
+      //expect(mpRoles).to.have.property('116', 'Manage Events Tools - CRDS');
     });
   });
-})
+
+  it('Request contains Mp User Info', function () {
+    cy.wrap({ authResponse }).its('authResponse.body').should('have.property', 'UserInfo').should('have.property', 'Mp').then(userInfo => {
+      expect(userInfo).to.have.property('ContactId', 7772248);
+      expect(userInfo).to.have.property('UserId', 4488274);
+      expect(userInfo).to.have.property('ParticipantId', 7654359);
+      expect(userInfo).to.have.property('HouseholdId', 5819396);
+      expect(userInfo).to.have.property('Email', `${Cypress.env('AUTH_USER_EMAIL')}`);
+      expect(userInfo).to.have.property('DonorId', 7745938);
+      expect(userInfo).to.have.property('CanImpersonate', false);
+    });
+  });
+});
 
 //response 200 for valid me
 // {

@@ -1,5 +1,5 @@
 {
-  "baseUrl": "https://int.crossroads.net",
+  "baseUrl": "https://api-int.crossroads.net/auth",
   "testFiles": "**/*_spec.js",
   "video": false
 }
