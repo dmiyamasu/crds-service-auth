@@ -17,3 +17,5 @@ RUN npx cypress verify
 
 COPY cypress cypress
 COPY cypress.json .
+COPY wait-for-it.sh .
+RUN chmod +x wait-for-it.sh
