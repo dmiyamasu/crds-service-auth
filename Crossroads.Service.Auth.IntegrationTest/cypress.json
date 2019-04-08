@@ -1,5 +1,4 @@
 {
-  "baseUrl": "https://int.crossroads.net",
   "testFiles": "**/*_spec.js",
   "video": false
 }
