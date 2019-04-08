@@ -4,7 +4,8 @@
   "description": "Integration tests using Cypress.io",
   "main": "index.js",
   "scripts": {
-    "test": "cypress run"
+    "test": "cypress run",
+    "open": "cypress open"
   },
   "repository": {
     "type": "git",

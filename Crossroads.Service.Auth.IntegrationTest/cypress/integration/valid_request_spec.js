@@ -1,6 +1,29 @@
 //TODO need to do this based on env - can have access to vault?
+/*
+* Responses for MP and Okta tokens should match
+*/
+function verifyMpRoles(responseBody) {
+  expect(responseBody).to.have.property('Authorization').and.have.property('MpRoles');
+
+  const mpRoles = responseBody.Authorization.MpRoles;
+  expect(mpRoles).to.have.property('39', 'All Platform Users');
+}
+
+function verifyUserInfo(responseBody) {
+  expect(responseBody).to.have.property('UserInfo').and.have.property('Mp');
+
+  const userInfo = responseBody.UserInfo.Mp;
+  expect(userInfo).to.have.property('ContactId', 7772248);
+  expect(userInfo).to.have.property('UserId', 4488274);
+  expect(userInfo).to.have.property('ParticipantId', 7654359);
+  expect(userInfo).to.have.property('HouseholdId', 5819396);
+  expect(userInfo).to.have.property('Email', `${Cypress.env('AUTH_USER_EMAIL')}`);
+  expect(userInfo).to.have.property('DonorId', 7745938);
+  expect(userInfo).to.have.property('CanImpersonate', false);
+}
+
 describe('Tests response for current MP tokens', function () {
-  let authResponse;
+  let mpResponseBody;
   before(function () {
     cy.request({
       method: 'POST',
@@ -8,46 +31,71 @@ describe('Tests response for current MP tokens', function () {
       body: { username: `${Cypress.env('AUTH_USER_EMAIL')}`, password: `${Cypress.env('AUTH_USER_PW')}` },
       log: false
     }).then(response => {
-      return response.body.userToken;
+      const mpUserToken = response.body.userToken;
 
-      //cy.setCookie('userId', response.body.userId.toString(), { domain: domain, log: false });
-    }).then(sessionId => {
       cy.request({
         method: 'GET',
-        url: `${Cypress.config().baseUrl}/api/authorize`,
-        headers: { Authorization: sessionId }
+        url: '/api/authorize',
+        headers: { Authorization: mpUserToken }
       }).then(response => {
         expect(response.status).to.eq(200);
-        // //Want the call to 'fail' if it takes too long to respond? We can do this!
-        expect(response.duration).to.be.lte(1000);
-
-        authResponse = response;//.body;
+        mpResponseBody = response.body;
       });
     });
   });
 
   it('Request authenticated by MP', function () {
-    cy.wrap({ authResponse }).its('authResponse.body').should('have.property', 'Authentication').and('have.property', 'Provider', 'mp');
+    expect(mpResponseBody).to.have.property('Authentication').and.have.property('Provider', 'mp');
   });
 
   it('Request contains MpRoles', function () {
-
-    cy.wrap({ authResponse }).its('authResponse.body').should('have.property', 'Authorization').should('have.property', 'MpRoles').then(mpRoles => {
-      expect(mpRoles).to.have.property('39', 'All Platform Users');
-      //expect(mpRoles).to.have.property('116', 'Manage Events Tools - CRDS');
-    });
+    verifyMpRoles(mpResponseBody);
   });
 
   it('Request contains Mp User Info', function () {
-    cy.wrap({ authResponse }).its('authResponse.body').should('have.property', 'UserInfo').should('have.property', 'Mp').then(userInfo => {
-      expect(userInfo).to.have.property('ContactId', 7772248);
-      expect(userInfo).to.have.property('UserId', 4488274);
-      expect(userInfo).to.have.property('ParticipantId', 7654359);
-      expect(userInfo).to.have.property('HouseholdId', 5819396);
-      expect(userInfo).to.have.property('Email', `${Cypress.env('AUTH_USER_EMAIL')}`);
-      expect(userInfo).to.have.property('DonorId', 7745938);
-      expect(userInfo).to.have.property('CanImpersonate', false);
+    verifyUserInfo(mpResponseBody);
+  });
+});
+
+describe('Tests response for current Okta tokens', function () {
+  let oktaResponseBody;
+  before(function () {
+    cy.request({
+      method: 'POST',
+      url: `${Cypress.env('OKTA_VALID_TOKEN_ENDPOINT')}`,
+      headers: { authorization: `${Cypress.env('OKTA_VALID_TOKEN_AUTHORIZATION')}` },
+      form: true,
+      body: {
+        grant_type: 'password',
+        username: `${Cypress.env('AUTH_USER_EMAIL')}`,
+        password: `${Cypress.env('AUTH_USER_PW')}`,
+        scope: 'openid'
+      },
+      log: false
+    }).then(response => {
+      const oktaUserToken = response.body.access_token;
+
+      cy.request({
+        method: 'GET',
+        url: '/api/authorize',
+        headers: { Authorization: oktaUserToken }
+      }).then(response => {
+        expect(response.status).to.eq(200);
+        oktaResponseBody = response.body;
+      });
     });
+  });
+
+  it('Request authenticated by Okta', function () {
+    expect(oktaResponseBody).to.have.property('Authentication').and.have.property('Provider', 'okta');
+  });
+
+  it('Request contains MpRoles', function () {
+    verifyMpRoles(oktaResponseBody);
+  });
+
+  it('Request contains Mp User Info', function () {
+    verifyUserInfo(oktaResponseBody);
   });
 });
 
@@ -86,6 +134,35 @@ describe('Tests response for current MP tokens', function () {
 //           "HouseholdId": 5774197,
 //           "Email": "shenney@callibrity.com",
 //           "DonorId": 7736119,
+//           "CanImpersonate": true
+//       }
+//   }
+// }
+
+
+//Valid okta response
+// {
+//   "Authentication": {
+//       "Provider": "okta"
+//   },
+//   "Authorization": {
+//       "MpRoles": {
+//           "39": "All Platform Users",
+//           "95": "All Backend Users - CRDS",
+//           "107": "System Administrator - CRDS",
+//           "1003": "Attendance Create/View/Edit",
+//           "1006": "Batch Manager Administrators"
+//       },
+//       "OktaRoles": {}
+//   },
+//   "UserInfo": {
+//       "Mp": {
+//           "ContactId": 7745736,
+//           "UserId": 4475699,
+//           "ParticipantId": 7630323,
+//           "HouseholdId": 5803895,
+//           "Email": "dcourts@callibrity.com",
+//           "DonorId": null,
 //           "CanImpersonate": true
 //       }
 //   }

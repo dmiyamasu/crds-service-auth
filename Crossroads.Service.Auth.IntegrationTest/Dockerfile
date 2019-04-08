@@ -17,5 +17,7 @@ RUN npx cypress verify
 
 COPY cypress cypress
 COPY cypress.json .
+# TODO remove the cypress.env.json line once envvars handled elsewhere.
+COPY cypress.env.json .
 COPY wait-for-it.sh .
 RUN chmod +x wait-for-it.sh
