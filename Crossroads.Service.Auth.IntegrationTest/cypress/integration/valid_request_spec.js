@@ -1,4 +1,3 @@
-//TODO need to do this based on env - can have access to vault?
 /*
 * Responses for MP and Okta tokens should match
 */
@@ -6,40 +5,51 @@ function verifyMpRoles(responseBody) {
   expect(responseBody).to.have.property('Authorization').and.have.property('MpRoles');
 
   const mpRoles = responseBody.Authorization.MpRoles;
-  expect(mpRoles).to.have.property('39', 'All Platform Users');
+  cy.fixture('authUser.json').then(authUser => {
+    authUser.mpRoles.forEach(role => {
+      expect(mpRoles).to.have.property(role.id, role.name);
+    });
+  });
 }
 
 function verifyUserInfo(responseBody) {
   expect(responseBody).to.have.property('UserInfo').and.have.property('Mp');
 
-  const userInfo = responseBody.UserInfo.Mp;
-  expect(userInfo).to.have.property('ContactId', 7772248);
-  expect(userInfo).to.have.property('UserId', 4488274);
-  expect(userInfo).to.have.property('ParticipantId', 7654359);
-  expect(userInfo).to.have.property('HouseholdId', 5819396);
-  expect(userInfo).to.have.property('Email', `${Cypress.env('AUTH_USER_EMAIL')}`);
-  expect(userInfo).to.have.property('DonorId', 7745938);
-  expect(userInfo).to.have.property('CanImpersonate', false);
+  cy.fixture('authUser.json').then(authUser => {
+    const userInfo = responseBody.UserInfo.Mp;
+    expect(userInfo).to.have.property('ContactId', authUser.contactId);
+    expect(userInfo).to.have.property('UserId', authUser.userId);
+    expect(userInfo).to.have.property('ParticipantId', authUser.participantId);
+    expect(userInfo).to.have.property('HouseholdId', authUser.householdId);
+    expect(userInfo).to.have.property('Email', authUser.email);
+    expect(userInfo).to.have.property('DonorId', authUser.donorId);
+    expect(userInfo).to.have.property('CanImpersonate', authUser.canImpersonate);
+  });
 }
 
 describe('Tests response for current MP tokens', function () {
   let mpResponseBody;
   before(function () {
-    cy.request({
-      method: 'POST',
-      url: `${Cypress.env('MP_LOGIN_ENDPOINT')}/gateway/api/login`,
-      body: { username: `${Cypress.env('AUTH_USER_EMAIL')}`, password: `${Cypress.env('AUTH_USER_PW')}` },
-      log: false
-    }).then(response => {
-      const mpUserToken = response.body.userToken;
-
+    cy.fixture('authUser.json').then(authUser => {
       cy.request({
-        method: 'GET',
-        url: '/api/authorize',
-        headers: { Authorization: mpUserToken }
+        method: 'POST',
+        url: `${Cypress.env('MP_LOGIN_ENDPOINT')}/api/login`,
+        body: {
+          username: authUser.email,
+          password: `${Cypress.env('AUTH_USER_PW')}`
+        }//,
+        //log: false
       }).then(response => {
-        expect(response.status).to.eq(200);
-        mpResponseBody = response.body;
+        const mpUserToken = response.body.userToken;
+
+        cy.request({
+          method: 'GET',
+          url: '/api/authorize',
+          headers: { Authorization: mpUserToken }
+        }).then(response => {
+          expect(response.status).to.eq(200);
+          mpResponseBody = response.body;
+        });
       });
     });
   });
@@ -60,28 +70,30 @@ describe('Tests response for current MP tokens', function () {
 describe('Tests response for current Okta tokens', function () {
   let oktaResponseBody;
   before(function () {
-    cy.request({
-      method: 'POST',
-      url: `${Cypress.env('OKTA_VALID_TOKEN_ENDPOINT')}`,
-      headers: { authorization: `${Cypress.env('OKTA_VALID_TOKEN_AUTHORIZATION')}` },
-      form: true,
-      body: {
-        grant_type: 'password',
-        username: `${Cypress.env('AUTH_USER_EMAIL')}`,
-        password: `${Cypress.env('AUTH_USER_PW')}`,
-        scope: 'openid'
-      },
-      log: false
-    }).then(response => {
-      const oktaUserToken = response.body.access_token;
-
+    cy.fixture('authUser.json').then(authUser => {
       cy.request({
-        method: 'GET',
-        url: '/api/authorize',
-        headers: { Authorization: oktaUserToken }
+        method: 'POST',
+        url: `${Cypress.env('OKTA_VALID_TOKEN_ENDPOINT')}`,
+        headers: { authorization: `${Cypress.env('OKTA_VALID_TOKEN_AUTHORIZATION')}` },
+        form: true,
+        body: {
+          grant_type: 'password',
+          username: authUser.email,
+          password: `${Cypress.env('AUTH_USER_PW')}`,
+          scope: 'openid'
+        }//,
+        //log: false
       }).then(response => {
-        expect(response.status).to.eq(200);
-        oktaResponseBody = response.body;
+        const oktaUserToken = response.body.access_token;
+
+        cy.request({
+          method: 'GET',
+          url: '/api/authorize',
+          headers: { Authorization: oktaUserToken }
+        }).then(response => {
+          expect(response.status).to.eq(200);
+          oktaResponseBody = response.body;
+        });
       });
     });
   });
