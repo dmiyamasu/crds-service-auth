@@ -37,8 +37,7 @@ describe('Tests response for current MP tokens', function () {
         body: {
           username: authUser.email,
           password: `${Cypress.env('AUTH_USER_PW')}`
-        }//,
-        //log: false
+        }
       }).then(response => {
         const mpUserToken = response.body.userToken;
 
@@ -81,8 +80,7 @@ describe('Tests response for current Okta tokens', function () {
           username: authUser.email,
           password: `${Cypress.env('AUTH_USER_PW')}`,
           scope: 'openid'
-        }//,
-        //log: false
+        }
       }).then(response => {
         const oktaUserToken = response.body.access_token;
 
@@ -110,72 +108,3 @@ describe('Tests response for current Okta tokens', function () {
     verifyUserInfo(oktaResponseBody);
   });
 });
-
-//response 200 for valid me
-// {
-//   "Authentication": {
-//       "Provider": "mp"
-//   },
-//   "Authorization": {
-//       "MpRoles": {
-//           "39": "All Platform Users",
-//           "84": "User Administrator - CRDS",
-//           "85": "Security Administrator - CRDS",
-//           "101": "Finance Data Admin - CRDS",
-//           "106": "Finance Management - CRDS",
-//           "107": "System Administrator - CRDS",
-//           "109": "Hidden Fields - CRDS",
-//           "111": "Finance Tools - CRDS",
-//           "112": "Kids Club Tools - CRDS",
-//           "116": "Manage Events Tools - CRDS",
-//           "1002": "Attendance Create/View",
-//           "1003": "Attendance Create/View/Edit",
-//           "1006": "Batch Manager Administrators",
-//           "1013": "Product Coordinator - CRD",
-//           "1014": "Facilities App",
-//           "1016": "FRED - CRDS",
-//           "1021": "FRED Report Tool - CRDS"
-//       },
-//       "OktaRoles": null
-//   },
-//   "UserInfo": {
-//       "Mp": {
-//           "ContactId": 7697116,
-//           "UserId": 4451263,
-//           "ParticipantId": 7586715,
-//           "HouseholdId": 5774197,
-//           "Email": "shenney@callibrity.com",
-//           "DonorId": 7736119,
-//           "CanImpersonate": true
-//       }
-//   }
-// }
-
-
-//Valid okta response
-// {
-//   "Authentication": {
-//       "Provider": "okta"
-//   },
-//   "Authorization": {
-//       "MpRoles": {
-//           "39": "All Platform Users",
-//           "95": "All Backend Users - CRDS",
-//           "107": "System Administrator - CRDS",
-//           "1003": "Attendance Create/View/Edit",
-//           "1006": "Batch Manager Administrators"
-//       },
-//       "OktaRoles": {}
-//   },
-//   "UserInfo": {
-//       "Mp": {
-//           "ContactId": 7745736,
-//           "UserId": 4475699,
-//           "ParticipantId": 7630323,
-//           "HouseholdId": 5803895,
-//           "Email": "dcourts@callibrity.com",
-//           "DonorId": null,
-//           "CanImpersonate": true
-//       }
-//   }
-// }
