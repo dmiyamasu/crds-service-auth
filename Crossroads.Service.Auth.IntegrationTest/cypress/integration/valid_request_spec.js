@@ -33,10 +33,10 @@ describe('Tests response for current MP tokens', function () {
     cy.fixture('authUser.json').then(authUser => {
       cy.request({
         method: 'POST',
-        url: `${Cypress.env('MP_LOGIN_ENDPOINT')}/api/login`,
+        url: `${Cypress.env('CRDS_GATEWAY_BASE_URL')}/api/login`,
         body: {
           username: authUser.email,
-          password: `${Cypress.env('AUTH_USER_PW')}`
+          password: `${Cypress.env('BEN_KENOBI_PW')}`
         }
       }).then(response => {
         const mpUserToken = response.body.userToken;
@@ -72,13 +72,13 @@ describe('Tests response for current Okta tokens', function () {
     cy.fixture('authUser.json').then(authUser => {
       cy.request({
         method: 'POST',
-        url: `${Cypress.env('OKTA_VALID_TOKEN_ENDPOINT')}`,
-        headers: { authorization: `${Cypress.env('OKTA_VALID_TOKEN_AUTHORIZATION')}` },
+        url: `${Cypress.env('OKTA_OAUTH_BASE_URL')}/v1/token`,
+        headers: { authorization: `${Cypress.env('OKTA_TOKEN_AUTH')}` }, //composit of "https://crossroads.oktapreview.com/oauth2/default/v1/token"
         form: true,
         body: {
           grant_type: 'password',
           username: authUser.email,
-          password: `${Cypress.env('AUTH_USER_PW')}`,
+          password: `${Cypress.env('BEN_KENOBI_PW')}`,
           scope: 'openid'
         }
       }).then(response => {
