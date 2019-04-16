@@ -27,12 +27,12 @@ function assignVars(dataObject) {
   });
 }
 
-describe('Vault stuff', function () {
-  it.only('checks if envvar is set?', function () {
+describe.skip('Vault stuff', function () {
+  it('checks if envvar is set?', function () {
     cy.log(`${Cypress.env('TEST_VAR')}`);
   });
 
-  it('request', function () {
+  it.skip('request', function () {
     cy.request({
       method: 'POST',
       url: 'https://vault.crossroads.net/v1/auth/approle/login',
@@ -62,7 +62,7 @@ describe('Vault stuff', function () {
     const loginOptions = {
       hostname: 'vault.crossroads.net/v1/auth/approle/login',
       method: 'POST',
-      header: { 'Access-Control-Allow-Origin': 'https://vault.crossroads.net'}
+      header: { 'Access-Control-Allow-Origin': 'https://vault.crossroads.net' }
       // body: {
       //   role_id: `${Cypress.env('VAULT_ROLE')}`,
       //   secret_id: `${Cypress.env('VAULT_SECRET')}`
@@ -86,7 +86,7 @@ describe('Vault stuff', function () {
     }).on('error', (e) => {
       console.error(e);
     });
-  })
+  });
 
   it('http request', function () {
     const loginOptions = {
@@ -118,10 +118,11 @@ describe('Vault stuff', function () {
       //   });
       // });
       // return "dogs";
-    })
+    });
   });
+});
 
-describe('vars loaded?', function () {
+describe.only('vars loaded?', function () {
   it('tests if envvars loaded', function () {
     //VAult
     cy.log(`CRDS_GATEWAY_BASE_URL = ${Cypress.env('CRDS_GATEWAY_BASE_URL')}`);
@@ -133,6 +134,5 @@ describe('vars loaded?', function () {
     cy.log(`VAULT_ROLE = ${Cypress.env('VAULT_ROLE')}`);
     cy.log(`VAULT_SECRET = ${Cypress.env('VAULT_SECRET')}`);
     cy.log(`VAULT_ENDPOINT = ${Cypress.env('VAULT_ENDPOINT')}`);
-    cy.log(`VAULT_DIRS = ${Cypress.env('VAULT_DIRS')}`);
-  })
-})
+  });
+});
