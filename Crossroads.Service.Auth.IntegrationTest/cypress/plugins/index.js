@@ -1,7 +1,11 @@
 module.exports = (on, config) => {
-  const vaultVariables = new VaultVariables(config.env.VAULT_ROLE, config.env.VAULT_SECRET);
+  let vaultUrls = config.env.VAULT_VAR_SOURCE;
+  if(typeof vaultUrls === 'string') {
+    vaultUrls = JSON.parse(vaultUrls);
+  }
 
-  return vaultVariables.getVariablesFromManyVaults(config.env.VAULT_VAR_URLS).then(vaultConfig => {
+  const vaultVariables = new VaultVariables(config.env.VAULT_ROLE, config.env.VAULT_SECRET);
+  return vaultVariables.getVariablesFromManyVaults(vaultUrls).then(vaultConfig => {
     config.env = vaultConfig;
     return config;
   });
@@ -15,6 +19,9 @@ class VaultVariables {
     this._variable_config = {};
   }
 
+  /**
+   * @returns {Object} the class's config object
+   */
   get config() {
     return this._variable_config;
   }
@@ -121,7 +128,7 @@ class VaultVariables {
     const getVaultSecrets = this._getVaultSecrets;
 
     if (!Array.isArray(vaultVariableNames)) {
-      throw Error(`Expected an array, but given ${vaultVariableNames}.`);
+      throw Error(`Expected an array, but given ${vaultVariableNames} which is a ${typeof(vaultVariableNames)}.`);
     }
 
     return new Promise(function (resolve, reject) {
