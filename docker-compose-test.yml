@@ -18,7 +18,7 @@ services:
       - auth
     environment:
       - CYPRESS_baseUrl=http://auth #This must be a fully qualified domain name
-      - CYPRESS_VAULT_ROLE=${VAULT_ROLE_ID}
-      - CYPRESS_VAULT_SECRET=${VAULT_SECRET_ID}
+      - CYPRESS_VAULT_ROLE_ID=${VAULT_ROLE_ID}
+      - CYPRESS_VAULT_SECRET_ID=${VAULT_SECRET_ID}
       - CYPRESS_VAULT_VAR_SOURCE=${VAULT_VAR_SOURCE}
     command: ./wait-for-it.sh auth:80 -- npx cypress run

@@ -73,7 +73,7 @@ describe('Tests response for current Okta tokens', function () {
       cy.request({
         method: 'POST',
         url: `${Cypress.env('OKTA_OAUTH_BASE_URL')}/v1/token`,
-        headers: { authorization: `${Cypress.env('OKTA_TOKEN_AUTH')}` }, //composit of "https://crossroads.oktapreview.com/oauth2/default/v1/token"
+        headers: { authorization: `${Cypress.env('OKTA_TOKEN_AUTH')}` },
         form: true,
         body: {
           grant_type: 'password',

@@ -4,7 +4,7 @@ module.exports = (on, config) => {
     vaultUrls = JSON.parse(vaultUrls);
   }
 
-  const vaultVariables = new VaultVariables(config.env.VAULT_ROLE, config.env.VAULT_SECRET);
+  const vaultVariables = new VaultVariables(config.env.VAULT_ROLE_ID, config.env.VAULT_SECRET_ID);
   return vaultVariables.getVariablesFromManyVaults(vaultUrls).then(vaultConfig => {
     config.env = vaultConfig;
     return config;
