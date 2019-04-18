@@ -27,13 +27,14 @@ class VaultVariables {
   }
 
   /**
-   * Fetches and stores each variable from Vault in the class's config object.
+   * Fetches and stores one, many or all variables from Vault in the class's config object.
    * @param {String} vaultURL - fully qualified Vault url
-   * @param {String | Object[]} vaultVariableNames - a single variable name OR an array of variable names to retrieve from Vault
+   * @param {String | Object[]} vaultVariableNames - a single variable name OR an array. The array can be empty (to store all variables from vault) or have variable names (to store only those variables).
    * @returns {Promise} the updated config object OR an error
    * @example
-   * getVariablesFromOneVault("https://vault.crossroads.net/env/staging/testVariables", "SECRET_VARIABLE");
-   * getVariablesFromOneVault("https://vault.crossroads.net/env/staging/testUsers", ["TEST_USER_1_ID", "TEST_USER_1_PW"]);
+   * getVariablesFromOneVault("https://vault.crossroads.net/env/staging/testVariables", "SECRET_VARIABLE"); //Stores one variable
+   * getVariablesFromOneVault("https://vault.crossroads.net/env/staging/testUsers", ["TEST_USER_1_ID", "TEST_USER_1_PW"]); //Stores both variables
+   * getVariablesFromOneVault("https://vault.crossroads.net/env/staging/testConstants": []); //Stores all variables
    */
   getVariablesFromOneVault(vaultURL, vaultVariableNames) {
     if (!Array.isArray(vaultVariableNames)) {
@@ -46,13 +47,14 @@ class VaultVariables {
   }
 
   /**
-   * Fetches and stores each variable from each Vault url in the class's config object.
-   * @param {Object} vaultURLsAndVariables - an object where properties are Vault URLs with an array of Vault variable names assigned them.
+   * Fetches and stores one, many, or all variables from each Vault url in the class's config object.
+   * @param {Object} vaultURLsAndVariables - an object where properties are Vault URLs with an array assigned them. The array can be empty (to store all variables from vault) or have variable names (to store only those variables).
    * @returns {Promise} the updated config object OR an error
    * @example
    * getVariablesFromManyVaults (
-   * { "https://vault.crossroads.net/env/staging/testUsers": ["TEST_USER_1_ID", "TEST_USER_1_PW"],
-   *   "https://vault.crossroads.net/env/staging/testVariables": ["SECRET_VARIABLE"] });
+   * { "https://vault.crossroads.net/env/staging/testUsers": ["TEST_USER_1_ID", "TEST_USER_1_PW"], //Stores both variables
+   *   "https://vault.crossroads.net/env/staging/testVariables": ["SECRET_VARIABLE"] }, //Stores one variable
+   *   "https://vault.crossroads.net/env/staging/testConstants": [] }); //Stores all variables
    */
   getVariablesFromManyVaults(vaultURLsAndVariables) {
     const vaultURLs = Object.keys(vaultURLsAndVariables);
@@ -117,10 +119,10 @@ class VaultVariables {
   }
 
   /**
-   * Helper function that fetches the desired variables from Vault and stores them in the class's config object.
+   * Helper function that fetches the desired variables (or all variables) from Vault and stores them in the class's config object.
    * @param {String} vaultToken - x-vault-token
    * @param {String} vaultUrl - fully qualified Vault url
-   * @param {Object[]} vaultVariableNames - array of variables to retrieve from Vault
+   * @param {Object[]} vaultVariableNames - array of variables to retrieve from Vault OR and empty array
    * @returns {Promise} the updated config object OR an error
    */
   _fetchAndAddVariablesToConfig(vaultToken, vaultUrl, vaultVariableNames) {
@@ -133,13 +135,18 @@ class VaultVariables {
 
     return new Promise(function (resolve, reject) {
       getVaultSecrets(vaultToken, vaultUrl).then(vaultVariables => {
-        vaultVariableNames.forEach(varName => {
-          config[varName] = vaultVariables[varName];
+        if(vaultVariableNames.length == 0 ){
+          Object.assign(config, vaultVariables);
+        }
+        else {
+          vaultVariableNames.forEach(varName => {
+            config[varName] = vaultVariables[varName];
 
-          if (vaultVariables[varName] === undefined) {
-            reject(Error(`${varName} could not be found in ${vaultUrl}`));
-          }
-        });
+            if (vaultVariables[varName] === undefined) {
+              reject(Error(`${varName} could not be found in ${vaultUrl}`));
+            }
+          });
+        }
 
         resolve(config);
       }, error => {
