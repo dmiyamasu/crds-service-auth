@@ -1,12 +1,15 @@
 {
-  "email": "mpcrds+auto+2@gmail.com",
-  "contactId": 7772248,
-  "userId": 4488274,
-  "participantId": 7654359,
-  "householdId": 5819396,
-  "donorId": 7745938,
-  "canImpersonate": false,
-  "mpRoles": {
+  "MpUserInfo": {
+    "Email": "mpcrds+auto+2@gmail.com",
+    "ContactId": 7772248,
+    "UserId": 4488274,
+    "ParticipantId": 7654359,
+    "HouseholdId": 5819396,
+    "DonorId": 7745938,
+    "CanImpersonate": false
+  },
+  "MpRoles": {
     "39": "All Platform Users"
-  }
+  },
+  "OktaRoles": {}
 }
