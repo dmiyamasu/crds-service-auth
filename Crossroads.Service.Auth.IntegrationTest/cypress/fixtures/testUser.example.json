@@ -1,0 +1,12 @@
+{
+  "email": "email@gmail.com",
+  "contactId": 1234567,
+  "userId": 1234567,
+  "participantId": null,
+  "householdId": 1234567,
+  "donorId": null,
+  "canImpersonate": false,
+  "mpRoles": {
+    "39": "All Platform Users"
+  }
+}

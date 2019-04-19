@@ -6,10 +6,7 @@
   "householdId": 5819396,
   "donorId": 7745938,
   "canImpersonate": false,
-  "mpRoles": [
-    {
-      "id": "39",
-      "name": "All Platform Users"
-    }
-  ]
+  "mpRoles": {
+    "39": "All Platform Users"
+  }
 }
