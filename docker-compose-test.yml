@@ -14,9 +14,11 @@ services:
     build: ./Crossroads.Service.Auth.IntegrationTest
     container_name: cypress
     image: cypress/base:8
-    restart: on-failure
     depends_on:
       - auth
     environment:
       - CYPRESS_baseUrl=http://auth #This must be a fully qualified domain name
+      - CYPRESS_VAULT_ROLE_ID=${VAULT_ROLE_ID}
+      - CYPRESS_VAULT_SECRET_ID=${VAULT_SECRET_ID}
+      - CYPRESS_VAULT_VAR_SOURCE=${VAULT_VAR_SOURCE}
     command: ./wait-for-it.sh auth:80 -- npx cypress run
