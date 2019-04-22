@@ -10,15 +10,12 @@ describe('Tests expired token response', function () {
       headers: { Authorization: expiredMPToken },
       failOnStatusCode: false
     }).then(response => {
-    
-
       expect(response.body).to.contain(expiredResponse);
       expect(response.status).to.eq(403);
-    
     });
   });
 
-  
+
   it('Expired Okta token', function () {
     const expiredOktaToken = 'eyJraWQiOiJ3eXlrOXRtS0VzSzdGNHlBSW5oX1gteGNJTlF6LXltc0VCbHNMUUExeWpFIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULmhvWWlrZmdDRHZwa29hSEh3aUlRa2U0c3RlcWVldmYzS2VGWVRrSXVOZFEiLCJpc3MiOiJodHRwczovL2Nyb3Nzcm9hZHMub2t0YXByZXZpZXcuY29tL29hdXRoMi9kZWZhdWx0IiwiYXVkIjoiYXBpOi8vZGVmYXVsdCIsImlhdCI6MTU1NTYxNTM0OSwiZXhwIjoxNTU1NjE3MTQ5LCJjaWQiOiIwb2FrNzZncjltaUpJRklDSjBoNyIsInVpZCI6IjAwdWkzOG0xd21yeTZVeUNDMGg3Iiwic2NwIjpbIm9wZW5pZCJdLCJzdWIiOiJtcGNyZHMrYXV0bysyQGdtYWlsLmNvbSIsIm1wQ29udGFjdElkIjoiNzc3MjI0OCJ9.pwc00xXR1v616oAaQ6JudMjWpf3jpgrsTuJu1ztHksH_6mMUrFyf4jdJlBE0fKWI7D2mFLi_iFlbyynJeNlXBkIMvAFnWICOMB4k4bsk8tq_M07ZOZ42wRXbJbtqAWkmVDUDAK332LpphafMqEKc-7p9qK2sG43qWye7I2l6Ft9hYALjQoLzPATevDdOMLr_i2NX-nz6dDKINqTTqZHj15XA6NXiwb_BSn9aQjdJLg6DaH1lz6NyBCJKnWRKqG_sBbP6Qss3JbMDaOpT0KwcQ1VzpLLKAaZpj3oQNRFwWVkxj45_Tvn5lzFsJQGEP4i-3u3JawK-2A9nswukqXGRsQ';
 
