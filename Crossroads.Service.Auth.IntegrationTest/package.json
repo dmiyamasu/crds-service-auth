@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Integration tests using Cypress.io",
   "main": "index.js",
-  "scripts": {
-    "test": "cypress run"
-  },
   "repository": {
     "type": "git",
     "url": "crds-service-auth"
