@@ -6,8 +6,10 @@ services:
       dockerfile: ./deployment/docker/Dockerfile
     container_name: auth
     image: crdschurch/crds-service-auth:${DOCKER_TAG:-local}
-    env_file:
-      - .env
+    environment:
+      - VAULT_ROLE_ID=${VAULT_ROLE_ID}
+      - VAULT_SECRET_ID=${VAULT_SECRET_ID}
+      - CRDS_ENV=${CRDS_ENV}
     ports:
       - "5000:80"
   cypress:
