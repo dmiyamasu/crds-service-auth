@@ -1,0 +1,15 @@
+{
+  "MpUserInfo": {
+    "Email": "email@gmail.com",
+    "ContactId": 1234567,
+    "UserId": 1234567,
+    "ParticipantId": 1234567,
+    "HouseholdId": 1234567,
+    "DonorId": null,
+    "CanImpersonate": false
+  },
+  "MpRoles": {
+    "39": "All Platform Users"
+  },
+  "OktaRoles": {}
+}

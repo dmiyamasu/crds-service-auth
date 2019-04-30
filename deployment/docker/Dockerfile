@@ -2,7 +2,9 @@ FROM microsoft/dotnet:2.1-sdk AS build-env
 WORKDIR /app 
  
 # Copy files to /app 
-COPY . ./ 
+COPY ./Crossroads.Service.Auth ./Crossroads.Service.Auth
+COPY ./Crossroads.Service.Auth.Test ./Crossroads.Service.Auth.Test
+COPY ./Crossroads.Service.Auth.sln ./Crossroads.Service.Auth.sln
  
 # Run Unit Tests 
 RUN dotnet test Crossroads.Service.Auth.Test/Crossroads.Service.Auth.Test.csproj 

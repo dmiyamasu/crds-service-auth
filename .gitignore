@@ -35,3 +35,10 @@ msbuild.wrn
 
 # Environment file
 .env
+
+# Cypress integration tests
+Crossroads.Service.Auth.IntegrationTest/node_modules/
+Crossroads.Service.Auth.IntegrationTest/cypress/integration/examples/
+Crossroads.Service.Auth.IntegrationTest/cypress/screenshots/
+Crossroads.Service.Auth.IntegrationTest/cypress/videos/
+Crossroads.Service.Auth.IntegrationTest/cypress.env.json

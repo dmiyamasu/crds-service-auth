@@ -1,0 +1,19 @@
+{
+  "name": "crossroads.service.auth.integrationtest",
+  "version": "1.0.0",
+  "description": "Integration tests using Cypress.io",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "crds-service-auth"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cypress": "^3.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-plugin-cypress": "^2.2.1"
+  }
+}
