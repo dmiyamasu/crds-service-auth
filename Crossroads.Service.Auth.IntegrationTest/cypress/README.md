@@ -8,12 +8,8 @@
 {
   "VAULT_ROLE_ID": "add id here",
   "VAULT_SECRET_ID": "add secret here",
-  "VAULT_VAR_SOURCE": { "https://vault.url.example": ["vault variable 1", "vault variable 2"] }
+  "CRDS_ENV": "environment prefix here"
 }
-```
-The properties of VAULT_VAR_SOURCE are fully qualified Vault URLs and their values are an array of the variable names to retrieve from that Vault. The following Vault variables are needed:
-```json
-"OKTA_OAUTH_BASE_URL", "CRDS_GATEWAY_BASE_URL", "OKTA_TOKEN_AUTH", "BEN_KENOBI_PW"
 ```
 Note: There are other ways to configure environment variables for Cypress. Check out the official documentation [here](https://docs.cypress.io/guides/guides/environment-variables.html#Setting).
 
@@ -42,13 +38,7 @@ Docker must be installed and running on your machine first. You can find it [her
 ```bash
 VAULT_ROLE_ID=addIdHere
 VAULT_SECRET_ID=addSecretHere
-VAULT_VAR_SOURCE={"https://vault.url.example":["vault variable 1", "vault variable 2"]}
-```
-
-The properties of VAULT_VAR_SOURCE are fully qualified Vault URLs and their values are an array of the variable names to retrieve from that Vault. The following Vault variables are needed:
-
-```bash
-"OKTA_OAUTH_BASE_URL", "CRDS_GATEWAY_BASE_URL", "OKTA_TOKEN_AUTH", "BEN_KENOBI_PW"
+CRDS_ENV=addEnvironmentHere
 ```
 
 ### Run Tests
