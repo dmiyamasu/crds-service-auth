@@ -1,15 +1,19 @@
-apiVersion: extensions/v1beta1 
+apiVersion: apps/v1
 kind: Deployment 
 metadata: 
   name: crds-auth
   namespace: api
 spec: 
   replicas: 2
+  progressDeadlineSeconds: 180
   strategy: 
     type: RollingUpdate 
     rollingUpdate: 
       maxSurge: 2
       maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: crds-auth
   template: 
     metadata: 
       labels:
