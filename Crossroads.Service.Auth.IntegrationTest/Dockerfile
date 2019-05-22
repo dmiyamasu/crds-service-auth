@@ -1,4 +1,4 @@
-FROM cypress/base:8
+FROM cypress/included:3.2.0
 WORKDIR /cypress-service-auth
 
 COPY package.json .
