@@ -6,7 +6,7 @@ describe('Tests expired token response', function () {
 
     cy.request({
       method: 'GET',
-      url: `${Cypress.config().baseUrl}/api/authorize`,
+      url: '/api/authorize',
       headers: { Authorization: expiredMPToken },
       failOnStatusCode: false
     }).then(response => {
@@ -21,7 +21,7 @@ describe('Tests expired token response', function () {
 
     cy.request({
       method: 'GET',
-      url: `${Cypress.config().baseUrl}/api/authorize`,
+      url: '/api/authorize',
       headers: { Authorization: expiredOktaToken },
       failOnStatusCode: false
     }).then(response => {

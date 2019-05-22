@@ -25,6 +25,3 @@ services:
       - CYPRESS_CRDS_ENV=${CRDS_ENV}
     working_dir: /cypress-service-auth
     command: /cypress-service-auth/wait-for-it.sh auth:80 -- npx cypress run
-    volumes:
-      - ./Crossroads.Service.Auth.IntegrationTest/cypress:/cypress-service-auth/cypress
-      - ./Crossroads.Service.Auth.IntegrationTest/cypress.json:/cypress-service-auth/cypress.json
