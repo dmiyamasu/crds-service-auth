@@ -24,4 +24,4 @@ services:
       - CYPRESS_VAULT_SECRET_ID=${VAULT_SECRET_ID}
       - CYPRESS_CRDS_ENV=${CRDS_ENV}
     working_dir: /cypress-service-auth
-    command: /cypress-service-auth/wait-for-it.sh auth:80 -- npx cypress run
+    entrypoint: /cypress-service-auth/wait-for-it.sh auth:80 -- npx cypress run
