@@ -12,10 +12,10 @@ services:
       - CRDS_ENV=${CRDS_ENV}
     ports:
       - "5000:80"
-  cypress_auth:
+  integration_tests:
     build: ./Crossroads.Service.Auth.IntegrationTest
-    container_name: cypress_auth
-    image: cypress/included:3.2.0
+    container_name: cypress_auth_integration
+    image: crdschurch/crds-service-auth-integration:${DOCKER_TAG:-local}
     depends_on:
       - auth
     environment:
@@ -23,5 +23,5 @@ services:
       - CYPRESS_VAULT_ROLE_ID=${VAULT_ROLE_ID}
       - CYPRESS_VAULT_SECRET_ID=${VAULT_SECRET_ID}
       - CYPRESS_CRDS_ENV=${CRDS_ENV}
-    working_dir: /cypress-service-auth
-    entrypoint: /cypress-service-auth/wait-for-it.sh auth:80 -- npx cypress run
+    working_dir: /cypress_auth_integration
+    entrypoint: /cypress_auth_integration/wait-for-it.sh auth:80 -- npx cypress run
