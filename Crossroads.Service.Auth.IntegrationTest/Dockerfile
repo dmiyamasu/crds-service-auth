@@ -1,5 +1,5 @@
 FROM cypress/included:3.2.0
-WORKDIR /cypress-service-auth
+WORKDIR /cypress_auth_integration
 
 COPY package.json .
 COPY package-lock.json .
