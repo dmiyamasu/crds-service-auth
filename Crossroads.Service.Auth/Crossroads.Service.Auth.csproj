@@ -17,7 +17,7 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="3.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
     <PackageReference Include="NewRelic.Agent.Api" Version="8.13.798" />
     <PackageReference Include="Crossroads.Microservice.Logging" Version="0.0.4" />
     <PackageReference Include="DotNetEnv" Version="1.2.0" />
