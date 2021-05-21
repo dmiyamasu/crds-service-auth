@@ -1,0 +1,40 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: Microsoft.IdentityModel.Protocols.OpenIdConnect
+    versions:
+    - 6.10.0
+    - 6.10.1
+    - 6.10.2
+    - 6.8.0
+    - 6.9.0
+  - dependency-name: Swashbuckle.AspNetCore
+    versions:
+    - 5.6.3
+    - 6.0.2
+    - 6.0.4
+    - 6.0.5
+    - 6.0.7
+    - 6.1.0
+    - 6.1.1
+    - 6.1.2
+  - dependency-name: NewRelic.Agent.Api
+    versions:
+    - 8.38.0
+    - 8.39.0
+    - 8.39.1
+  - dependency-name: Microsoft.NET.Test.Sdk
+    versions:
+    - 16.8.3
+    - 16.9.1
+  - dependency-name: Moq
+    versions:
+    - 4.16.0
+  - dependency-name: Crossroads.Web.Common
+    versions:
+    - 3.1.1
