@@ -42,3 +42,4 @@ ENV CORECLR_NEWRELIC_HOME=/usr/local/newrelic-netcore20-agent
 CMD $CORECLR_NEWRELIC_HOME/run.sh dotnet Crossroads.Service.Auth.dll
 # Run the dotnet entrypoint for the crdsfred dll 
 # ENTRYPOINT ["dotnet", "Crossroads.Service.Auth.dll"]
+# test dave
