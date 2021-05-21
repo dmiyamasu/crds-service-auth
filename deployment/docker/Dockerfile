@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk AS build-env 
+FROM microsoft/dotnet:2.1-sdk@sha256:2efb24fb551298c8ebe7701b557b4be86aa0258e870991095e28b748dd8997e5 AS build-env 
 WORKDIR /app 
  
 # Copy files to /app 
@@ -13,7 +13,7 @@ RUN dotnet test Crossroads.Service.Auth.Test/Crossroads.Service.Auth.Test.csproj
 RUN dotnet publish -c Release -o out 
  
 # Step 1: Build runtime image 
-FROM microsoft/dotnet:2.1-aspnetcore-runtime
+FROM microsoft/dotnet:2.1-aspnetcore-runtime@sha256:6ec6e5db161b5bd3b5472e4b0a31230823fb2eacff885be367022ae9a68281e5
 
 WORKDIR /app
  
@@ -42,3 +42,4 @@ ENV CORECLR_NEWRELIC_HOME=/usr/local/newrelic-netcore20-agent
 CMD $CORECLR_NEWRELIC_HOME/run.sh dotnet Crossroads.Service.Auth.dll
 # Run the dotnet entrypoint for the crdsfred dll 
 # ENTRYPOINT ["dotnet", "Crossroads.Service.Auth.dll"]
+# test dave
