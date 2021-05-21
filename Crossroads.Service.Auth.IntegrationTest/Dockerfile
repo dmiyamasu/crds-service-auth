@@ -1,4 +1,4 @@
-FROM cypress/included:3.2.0
+FROM cypress/included:3.2.0@sha256:9c7aab130b0e681bda3ac94c437af47d844e9dbfda377de7ff32640b4364d17f
 WORKDIR /cypress_auth_integration
 
 COPY package.json .
