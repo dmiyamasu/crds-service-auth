@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk AS build-env 
+FROM microsoft/dotnet:2.1-sdk@sha256:2efb24fb551298c8ebe7701b557b4be86aa0258e870991095e28b748dd8997e5 AS build-env 
 WORKDIR /app 
  
 # Copy files to /app 
