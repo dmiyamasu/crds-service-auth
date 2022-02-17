@@ -22,7 +22,7 @@
     <PackageReference Include="Crossroads.Microservice.Logging" Version="0.0.4" />
     <PackageReference Include="DotNetEnv" Version="2.1.1" />
     <PackageReference Include="Crossroads.Web.Common" Version="3.1.2" />
-    <PackageReference Include="Crossroads.Microservice.Settings" Version="0.0.11" />
+    <PackageReference Include="Crossroads.Microservice.Settings" Version="1.2.2" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Services\OpenIdConnectConfiguration.cs" />
